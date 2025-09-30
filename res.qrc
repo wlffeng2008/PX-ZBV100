@@ -1,0 +1,41 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/Action - Undo.png</file>
+        <file>images/a-left.png</file>
+        <file>images/a-right.png</file>
+        <file>images/BoxChecked.png</file>
+        <file>images/BoxUncheck.png</file>
+        <file>images/check.png</file>
+        <file>images/Checked-Hover.png</file>
+        <file>images/Checked-Normal.png</file>
+        <file>images/Clipboard - Cut.png</file>
+        <file>images/Correct.png</file>
+        <file>images/down-arrow.png</file>
+        <file>images/Floppy.png</file>
+        <file>images/Forbidden.png</file>
+        <file>images/General_Add1.png</file>
+        <file>images/General_Add2.png</file>
+        <file>images/General_ArrowDown.png</file>
+        <file>images/General_ArrowLeft.png</file>
+        <file>images/General_ArrowRight.png</file>
+        <file>images/General_ArrowUp.png</file>
+        <file>images/General_NG3.png</file>
+        <file>images/General_OK3.png</file>
+        <file>images/General_OK4.png</file>
+        <file>images/image-24.png</file>
+        <file>images/Information.png</file>
+        <file>images/Music.png</file>
+        <file>images/Question.png</file>
+        <file>images/Refresh.png</file>
+        <file>images/Sample 06.ico</file>
+        <file>images/Uncheck-Hover.png</file>
+        <file>images/Uncheck-Normal.png</file>
+        <file>images/User.png</file>
+        <file>images/Warning1.png</file>
+        <file>images/Warning2.png</file>
+        <file>images/Wrong.png</file>
+        <file>images/x.png</file>
+        <file>images/y.png</file>
+        <file>images/YES.png</file>
+    </qresource>
+</RCC>
