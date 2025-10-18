@@ -13,8 +13,8 @@ int main(int argc, char *argv[])
     //QApplication::setStyle("Fusion");
     a.setStyleSheet(
         R"(
-        QTableView { border: 1px solid gray; gridline-color: transparent;  background-color: rgb(220, 250, 255); gridline-color: gray;}
-        QTableView::Item { padding-left:2px; background-color: transparent; border-top: 0px solid gray; border-bottom: 1px solid transparent;border-right: 0px solid gray;}
+        QTableView {font-size: 12px; font-weight: bold; border: 1px solid gray;  background-color: rgb(220, 250, 255); gridline-color: gray;}
+        QTableView::Item { padding-left:2px;  border-top: 0px solid gray; border-bottom: 1px solid transparent;border-right: 0px solid gray;}
         QTableView::Item::selected { background-color: #a0bb9e; color:white; }
         QTableView QTableCornerButton::section { background-color: skyblue ; min-width: 32px; border-top: 0px solid gray; border-bottom: 1px solid gray; border-left: 0px solid gray; border-right: 1px solid gray; }
 
@@ -57,10 +57,10 @@ int main(int argc, char *argv[])
         QSlider::handle:pressed { background: #E0E0E0; border-color: #2D7FDD; }
 
         QPushButton {
-                background-color: #6C9F50;
+                background-color: #2D7FDD;
                 border-radius: 8px;
                 color: white;
-                border: 2px solid gray;
+                border: 1px solid #6C9F50;
                 padding: 2px 2px;
                 min-width: 60px;
                 min-height: 16px; }
@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
         QSpinBox {border: 1px solid gray; border-radius: 4px; }
         QSpinBox:focus{ border: 1px solid #50b7c1; border-radius: 4px;  background-color: rgb(226, 249, 255);}
 
-        QGroupBox * { font-size: 12px; font-weight: bold; }
+        QGroupBox * { font-size: 12px; font-weight: semibold; }
 
     )");
 
@@ -162,6 +162,7 @@ int main(int argc, char *argv[])
             break;
         }
     }
+    //a.setStyleSheet("");
     MainWindow w;
     w.show();
     return a.exec();

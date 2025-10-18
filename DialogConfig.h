@@ -2,6 +2,9 @@
 #define DIALOGCONFIG_H
 
 #include <QDialog>
+#include <QStandardItemModel>
+
+#include "gencomport.h"
 
 namespace Ui {
 class DialogConfig;
@@ -17,6 +20,12 @@ public:
 
 private:
     Ui::DialogConfig *ui;
+    QStandardItemModel *m_pModel1 = nullptr ;
+    QStandardItemModel *m_pModel2 = nullptr ;
+    QStandardItemModel *m_pModel3 = nullptr ;
+
+    GenComport *m_pCOM1 = nullptr;
+    GenComport *m_pCOM2 = nullptr;
 };
 
 #endif // DIALOGCONFIG_H

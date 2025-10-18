@@ -2,6 +2,7 @@
 #define DIALOGSETTING_H
 
 #include <QDialog>
+#include <QStandardItemModel>
 
 namespace Ui {
 class DialogSetting;
@@ -17,6 +18,11 @@ public:
 
 private:
     Ui::DialogSetting *ui;
+
+    QStandardItemModel *m_pModel1 = nullptr ;
+    QStandardItemModel *m_pModel2 = nullptr ;
+    QStandardItemModel *m_pModel3 = nullptr ;
+    QStandardItemModel *m_pModel4 = nullptr ;
 };
 
 #endif // DIALOGSETTING_H
