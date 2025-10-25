@@ -26,6 +26,8 @@ private:
 
     GenComport *m_pCOM1 = nullptr;
     GenComport *m_pCOM2 = nullptr;
+
+    void updateCOMStatus();
 };
 
 #endif // DIALOGCONFIG_H

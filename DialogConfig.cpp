@@ -21,7 +21,7 @@ DialogConfig::DialogConfig(QWidget *parent)
 
     m_pModel1->appendRow({new QStandardItem("静态电流"),new QStandardItem("5.00"),new QStandardItem("7.00"),new QStandardItem("uA")}) ;
     m_pModel1->appendRow({new QStandardItem("吸烟电流"),new QStandardItem("1000"),new QStandardItem("3000"),new QStandardItem("mA")}) ;
-    m_pModel1->appendRow({new QStandardItem("充电电流"),new QStandardItem("100"),new QStandardItem("600"),new QStandardItem("mA")}) ;
+    m_pModel1->appendRow({new QStandardItem("充电电流"),new QStandardItem("100" ),new QStandardItem("600" ),new QStandardItem("mA")}) ;
     m_pModel1->appendRow({new QStandardItem("充满电压"),new QStandardItem("4150"),new QStandardItem("4250"),new QStandardItem("mV")}) ;
     m_pModel1->appendRow({new QStandardItem("输出电压"),new QStandardItem("3500"),new QStandardItem("3600"),new QStandardItem("mV")}) ;
     m_pModel1->appendRow({new QStandardItem("启动气压"),new QStandardItem("-200"),new QStandardItem("-100"),new QStandardItem("Pa")}) ;
@@ -32,6 +32,7 @@ DialogConfig::DialogConfig(QWidget *parent)
         {
             QStandardItem *item = m_pModel1->item(i,j) ;
             if(j == 0 || j == 3) item->setEditable(false);
+            if(j > 0) item->setTextAlignment(Qt::AlignCenter) ;
         }
     }
 
@@ -49,7 +50,7 @@ DialogConfig::DialogConfig(QWidget *parent)
     m_pModel2->appendRow({new QStandardItem("数据位"),new QStandardItem("8位"),new QStandardItem("8位")}) ;
     m_pModel2->appendRow({new QStandardItem("校验位"),new QStandardItem("无校验"),new QStandardItem("无校验")}) ;
     m_pModel2->appendRow({new QStandardItem("停止位"),new QStandardItem("1位"),new QStandardItem("1位")}) ;
-    m_pModel2->appendRow({new QStandardItem("连接状态"),new QStandardItem("未连接"),new QStandardItem("未连接")}) ;
+    m_pModel2->appendRow({new QStandardItem("连接状态"),new QStandardItem("串口未打开"),new QStandardItem("串口未打开")}) ;
     m_pModel2->appendRow({new QStandardItem("控制"),new QStandardItem("打开串口"),new QStandardItem("打开串口")}) ;
     for(int i=0; i<7; i++)
     {
@@ -62,6 +63,11 @@ DialogConfig::DialogConfig(QWidget *parent)
         }
     }
 
+    m_pModel2->item(0,1)->setEditable(true);
+    m_pModel2->item(0,2)->setEditable(true);
+    m_pModel2->item(1,1)->setEditable(true);
+    m_pModel2->item(1,2)->setEditable(true);
+
     m_pModel2->item(5,1)->setCheckable(true);
     m_pModel2->item(5,2)->setCheckable(true);
     m_pModel2->item(5,1)->setEnabled(false);
@@ -71,13 +77,13 @@ DialogConfig::DialogConfig(QWidget *parent)
     m_pModel2->item(6,2)->setCheckable(true);
 
     m_pModel3 = new QStandardItemModel(this);
-    m_pModel3->setHorizontalHeaderLabels(QString("通道号,放弃检查").split(','));
+    m_pModel3->setHorizontalHeaderLabels(QString("通道号,开启检查").split(','));
     ui->tableView3->setModel(m_pModel3);
     pHeader = ui->tableView3->horizontalHeader() ;
     pHeader->setSectionResizeMode(QHeaderView::Stretch) ;
     ui->tableView3->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     pHeader->setSectionResizeMode(0,QHeaderView::Fixed) ;
-    pHeader->resizeSection(0,70) ;
+    pHeader->resizeSection(0,50) ;
 
     connect(ui->spinBox,&QSpinBox::valueChanged,this,[=](int value){
         m_pModel3->setRowCount(0) ;
@@ -86,18 +92,77 @@ DialogConfig::DialogConfig(QWidget *parent)
             QStandardItem *item1 = new QStandardItem(QString("%1").arg(i+1));
             QStandardItem *item2 = new QStandardItem("");
             item1->setEditable(false);
+            item1->setTextAlignment(Qt::AlignVCenter|Qt::AlignRight) ;
             item2->setEditable(false);
             item2->setCheckable(true);
+            item2->setCheckState(Qt::Checked);
             m_pModel3->appendRow({item1,item2});
         }
     }) ;
 
     ui->spinBox->setValue(1) ;
-    QTimer::singleShot(200,[=]{ui->spinBox->setValue(12) ;});
+    QTimer::singleShot(200,[=]{ ui->spinBox->setValue(12); });
 
+    connect(ui->tableView2,&QTableView::clicked,this,[=](const QModelIndex &index){
+
+    });
+
+    connect(m_pModel2,&QStandardItemModel::itemChanged,this,[=](QStandardItem *item){
+        int row = item->row();
+        int col = item->column();
+
+        if(row == 6)
+        {
+            bool checked = (item->checkState() == Qt::Checked) ;
+            if(col == 1)
+            {
+                if(m_pCOM1)
+                    m_pCOM1->closePort() ;
+
+                if( checked )
+                {
+                    m_pCOM1 = new GenComport(this) ;
+                    m_pCOM1->setPortName(m_pModel2->item(0,1)->text().trimmed()) ;
+                    m_pCOM1->setPortParam(m_pModel2->item(1,1)->text().toInt()) ;
+                    m_pCOM1->openPort() ;
+                }
+            }
+
+            if(col == 2)
+            {
+                if(m_pCOM2)
+                    m_pCOM2->closePort() ;
+
+                if( checked )
+                {
+                    m_pCOM2 = new GenComport(this) ;
+                    m_pCOM2->setPortName(m_pModel2->item(0,2)->text().trimmed()) ;
+                    m_pCOM2->setPortParam(m_pModel2->item(1,2)->text().toInt()) ;
+                    m_pCOM2->openPort() ;
+                }
+            }
+
+            updateCOMStatus() ;
+        }
+    });
+
+    m_pCOM1 = new GenComport(this);
+    m_pCOM2 = new GenComport(this);
+
+    connect(m_pCOM1,&GenComport::onReceive,this,[=](const QByteArray &data){});
+    connect(m_pCOM2,&GenComport::onReceive,this,[=](const QByteArray &data){});
 }
 
 DialogConfig::~DialogConfig()
 {
     delete ui;
+}
+
+void DialogConfig::updateCOMStatus()
+{
+    m_pModel2->item(5,1)->setCheckState(m_pCOM1->isOpen() ? Qt::Checked : Qt::Unchecked) ;
+    m_pModel2->item(5,2)->setCheckState(m_pCOM2->isOpen() ? Qt::Checked : Qt::Unchecked) ;
+
+    m_pModel2->item(5,1)->setText(m_pCOM1->isOpen() ? "串口已打开" : "串口未打开") ;
+    m_pModel2->item(5,2)->setText(m_pCOM2->isOpen() ? "串口已打开" : "串口未打开") ;
 }

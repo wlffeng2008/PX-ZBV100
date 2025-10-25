@@ -142,6 +142,8 @@ protected:
             qDebug() << option.rect << clp;
             if(item->isCheckable())
             {
+                if(index.column()==0)
+                    return true ;
                 if(clp.x() > 70 && clp.x() <100)
                 item->setCheckState(item->checkState()== Qt::Unchecked ? Qt::Checked:Qt::Unchecked) ;
                 return true;
