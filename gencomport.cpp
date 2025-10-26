@@ -113,9 +113,9 @@ void GenComport::setPortParam(int nBaudRate,int nDataBit,int nStopBit,int nParit
 
 void GenComport::send(const QByteArray &data)
 {
+    qDebug().noquote() << m_strName << "Send: ----> " << data.toHex(' ').toUpper();
     if(m_serialPort && m_serialPort->isOpen())
     {
-        qDebug().noquote() << m_strName << "Send: ----> " << data.toHex(' ').toUpper();
         m_serialPort->write(data);
         if(!m_serialPort->waitForBytesWritten())
         {
@@ -140,7 +140,7 @@ void GenComport::receive()
     {
         m_data = m_serialPort->readAll();
         qDebug().noquote()<< m_strName << "Recv: <---- "<<m_data.toHex(' ').toUpper();
-        emit(onReceive(m_data));
+        emit onReceive(m_data);
     }
 }
 

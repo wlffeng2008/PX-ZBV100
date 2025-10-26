@@ -24,8 +24,8 @@ MainWindow::MainWindow(QWidget *parent)
             pWin->setFlags(windowFlags() & ~Qt::WindowStaysOnTopHint);
     });
 
-    m_pDlgSet = new DialogSetting(this);
     m_pDlgCfg = new DialogConfig(this) ;
+    m_pDlgSet = new DialogSetting(this);
 
     connect(ui->pushButtonSetting,&QPushButton::clicked,this,[=]{
         m_pDlgSet->show();
@@ -39,7 +39,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tableView1->setModel(m_pModel1);
     QHeaderView *pHeader = ui->tableView1->horizontalHeader() ;
     m_pModel1->setHorizontalHeaderLabels(QString("通道号(启用),静态电流(uA),吸烟电流(mA),充电电流(mA),充满电压(mV),输出电压(mV),启动电压(mV),测试结果").split(','));
-    for(int i=0; i<18; i++)
+    for(int i=0; i<m_pDlgCfg->getChanCount(); i++)
     {
         QStandardItem *item0 = new QStandardItem(QString::number(i+1)) ;
         QStandardItem *item1 = new QStandardItem("0") ;
@@ -61,7 +61,7 @@ MainWindow::MainWindow(QWidget *parent)
     pHeader->setSectionResizeMode(QHeaderView::Stretch);
     pHeader->setSectionResizeMode(0,QHeaderView::Fixed);
     pHeader->resizeSection(0,100) ;
-    ui->tableView1->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch) ;
+    //ui->tableView1->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch) ;
 
     for(int i=0; i<pHeader->count(); i++)
     {

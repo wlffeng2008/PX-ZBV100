@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>680</width>
+    <width>732</width>
     <height>426</height>
    </rect>
   </property>
@@ -18,7 +18,7 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>451</width>
+     <width>501</width>
      <height>201</height>
     </rect>
    </property>
@@ -30,7 +30,7 @@
      <rect>
       <x>10</x>
       <y>20</y>
-      <width>431</width>
+      <width>481</width>
       <height>171</height>
      </rect>
     </property>
@@ -54,10 +54,10 @@
     </attribute>
    </widget>
   </widget>
-  <widget class="QGroupBox" name="groupBox2">
+  <widget class="QGroupBox" name="groupBoxDelay">
    <property name="geometry">
     <rect>
-     <x>470</x>
+     <x>520</x>
      <y>10</y>
      <width>201</width>
      <height>201</height>
@@ -66,7 +66,7 @@
    <property name="title">
     <string>延迟参数</string>
    </property>
-   <widget class="QTableView" name="tableView2">
+   <widget class="QTableView" name="tableViewDelay">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -95,10 +95,10 @@
     </attribute>
    </widget>
   </widget>
-  <widget class="QGroupBox" name="groupBox3">
+  <widget class="QGroupBox" name="groupBoxGSwitch">
    <property name="geometry">
     <rect>
-     <x>470</x>
+     <x>520</x>
      <y>220</y>
      <width>201</width>
      <height>131</height>
@@ -107,7 +107,7 @@
    <property name="title">
     <string>通道无关控制开关地址(HEX)</string>
    </property>
-   <widget class="QTableView" name="tableView3">
+   <widget class="QTableView" name="tableViewGSwitch">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -141,7 +141,7 @@
     <rect>
      <x>10</x>
      <y>220</y>
-     <width>451</width>
+     <width>501</width>
      <height>201</height>
     </rect>
    </property>
@@ -153,7 +153,7 @@
      <rect>
       <x>10</x>
       <y>20</y>
-      <width>431</width>
+      <width>481</width>
       <height>171</height>
      </rect>
     </property>
@@ -180,7 +180,7 @@
   <widget class="QPushButton" name="pushButton">
    <property name="geometry">
     <rect>
-     <x>490</x>
+     <x>540</x>
      <y>370</y>
      <width>161</width>
      <height>41</height>
