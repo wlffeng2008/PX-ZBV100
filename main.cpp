@@ -7,12 +7,12 @@
 int main(int argc, char *argv[])
 {
     QApplication::setHighDpiScaleFactorRoundingPolicy(
-        Qt::HighDpiScaleFactorRoundingPolicy::PassThrough  // 允许非整数倍缩放
+        Qt::HighDpiScaleFactorRoundingPolicy::PassThrough
         );
     QApplication a(argc, argv);
     //QApplication::setStyle("Fusion");
-    a.setStyleSheet(
-        R"(
+    a.setStyleSheet( R"(
+
         QTableView {font-size: 12px; font-weight: bold; border: 1px solid gray;  background-color: rgb(220, 250, 255); gridline-color: gray;}
         QTableView::Item { padding-left:2px;  border-top: 0px solid gray; border-bottom: 1px solid transparent;border-right: 0px solid gray;}
         QTableView::Item::selected { background-color: #a0bb9e; color:white; }
@@ -114,8 +114,8 @@ int main(int argc, char *argv[])
         QCheckBox::indicator { width: 14px; height: 14px; }
         QCheckBox::indicator:unchecked { background: white; border: 2px solid #999; }
         QCheckBox::indicator:checked {
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             background: transparent;
             image: url(:/images/BoxChecked.png);
         }

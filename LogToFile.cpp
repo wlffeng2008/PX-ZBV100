@@ -7,7 +7,7 @@
 #include <QDir>
 #include <QDebug>
 
-namespace tcl_log
+namespace file_log
 {
     QFile m_logFile;
     const qint64 m_MaxFileSize = 5 * 1024 * 1024; // 5MB

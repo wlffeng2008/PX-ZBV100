@@ -19,8 +19,6 @@ class MainWindow;
 }
 QT_END_NAMESPACE
 
-
-
 class CustomStyle : public QProxyStyle {
 public:
     void drawControl(ControlElement element, const QStyleOption* option,
@@ -30,7 +28,7 @@ public:
             painter->save();
             painter->setRenderHint(QPainter::SmoothPixmapTransform) ;
             QRect rectBox = option->rect ;
-            rectBox.adjust(5,5,-5,-5) ;
+            rectBox.adjust(4,4,-4,-4) ;
             rectBox.setWidth(rectBox.height()) ;
             if (option->state & State_On)
                 painter->drawImage(rectBox,QImage(":/images/BoxChecked.png"));
@@ -65,57 +63,30 @@ protected:
     {
         QStandardItemModel *pModel = (QStandardItemModel *)index.model() ;
         QStandardItem *item = pModel->itemFromIndex(index) ;
-        QRect rect = option.rect ;
-        int col = index.column() ;
-        if(col == 100 && item->isCheckable())
+        if(!item->isEnabled())
         {
-            QStyleOptionViewItem opt = option ;
-            initStyleOption(&opt,index) ;
-            opt.backgroundBrush = QBrush(Qt::NoBrush);
-            opt.backgroundBrush = QBrush(QColorConstants::Svg::skyblue);
-            QStyledItemDelegate::paint(painter, opt, index) ;
+            QStyledItemDelegate::paint(painter, option, index) ;
             return ;
         }
 
         painter->save() ;
 
+        QRect rect = option.rect ;
+        int col = index.column() ;
         int result = item->data(Qt::UserRole+1).value<int>() ;
         QString text = item->text() ;
         QBrush bkBrush = item->data(Qt::BackgroundRole).value<QBrush>() ;
         QColor frColor = item->data(Qt::ForegroundRole).value<QBrush>().color() ;
 
         if(col == 7) text = "待测试" ;
-        if(result == 1){bkBrush = QBrush(Qt::green);frColor = Qt::white; if(col == 7) text = "PASS";}
+        if(result == 1){bkBrush = QBrush(0x00A000); frColor = Qt::white; if(col == 7) text = "PASS";}
         if(result == 2){bkBrush = QBrush(Qt::red);  frColor = Qt::white; if(col == 7) text = "NG";  }
 
         painter->setFont(item->data(Qt::FontRole).value<QFont>()) ;
         painter->setPen(frColor) ;
-        painter->fillRect(option.rect,bkBrush);
+        painter->fillRect(rect,bkBrush);
         if(item->isCheckable())
         {
-            Qt::CheckState checkState = static_cast<Qt::CheckState>(index.data(Qt::CheckStateRole).toInt());
-
-            QStyleOptionButton checkBoxOption;
-            checkBoxOption.rect = rect;
-
-            checkBoxOption.state = QStyle::State_Enabled;  // 启用状态
-            if (checkState == Qt::Checked) {
-                checkBoxOption.state |= QStyle::State_On;
-            } else if (checkState == Qt::Unchecked) {
-                checkBoxOption.state |= QStyle::State_Off;
-            } else {
-                checkBoxOption.state |= QStyle::State_NoChange;  // 半选
-            }
-
-            if (option.state & QStyle::State_Selected) {
-                //painter->fillRect(option.rect, option.palette.highlight());
-            }
-            // QApplication::style()->drawControl(
-            //     QStyle::CE_CheckBox,  // 绘制复选框控件
-            //     &checkBoxOption,
-            //     painter
-            //     );
-
             painter->setRenderHint(QPainter::SmoothPixmapTransform) ;
             QRect rectBox = rect.adjusted(option.rect.right() - option.rect.height(),0,0,0);
             rectBox.setWidth(rectBox.height()) ;
@@ -139,7 +110,7 @@ protected:
             emit onClicked(index.row(),index.column()) ;
             QPoint clp = tableView->viewport()->mapFromGlobal(QCursor::pos())  ;
 
-            qDebug() << option.rect << clp;
+            // qDebug() << option.rect << clp;
             if(item->isCheckable())
             {
                 if(index.column()==0)
@@ -168,6 +139,10 @@ private:
 
     DialogSetting *m_pDlgSet = nullptr ;
     DialogConfig  *m_pDlgCfg = nullptr ;
+
+    bool m_colEnable[10]={true} ;
+
+    QTimer m_TMCheck ;
 
     void setItemResult(int row,int col,int result=0) ;
     void setRowResult(int row,int result=0) ;

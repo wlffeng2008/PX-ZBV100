@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1000</width>
-    <height>600</height>
+    <height>500</height>
    </rect>
   </property>
   <property name="focusPolicy">
@@ -33,7 +33,7 @@
      </font>
     </property>
     <property name="styleSheet">
-     <string notr="true"/>
+     <string notr="true">QLabel{border:2px solid skyblue;border-radius:10px;background-color:gray;color:white}</string>
     </property>
     <property name="text">
      <string>待测试</string>
@@ -46,10 +46,16 @@
     <property name="geometry">
      <rect>
       <x>810</x>
-      <y>310</y>
+      <y>240</y>
       <width>171</width>
       <height>31</height>
      </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::FocusPolicy::NoFocus</enum>
     </property>
     <property name="text">
      <string>测试日志</string>
@@ -59,10 +65,16 @@
     <property name="geometry">
      <rect>
       <x>810</x>
-      <y>360</y>
+      <y>290</y>
       <width>171</width>
       <height>31</height>
      </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::FocusPolicy::NoFocus</enum>
     </property>
     <property name="text">
      <string>参数配置</string>
@@ -72,10 +84,16 @@
     <property name="geometry">
      <rect>
       <x>810</x>
-      <y>410</y>
+      <y>340</y>
       <width>171</width>
       <height>31</height>
      </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::FocusPolicy::NoFocus</enum>
     </property>
     <property name="text">
      <string>程序编辑</string>
@@ -85,10 +103,19 @@
     <property name="geometry">
      <rect>
       <x>810</x>
-      <y>490</y>
+      <y>400</y>
       <width>171</width>
-      <height>71</height>
+      <height>60</height>
      </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::FocusPolicy::NoFocus</enum>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton{border:2px solid gray;border-radius:10px;background-color:blue;color:white;font-size:40px;}</string>
     </property>
     <property name="text">
      <string>RUN</string>
@@ -99,8 +126,8 @@
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>781</width>
-      <height>551</height>
+      <width>780</width>
+      <height>450</height>
      </rect>
     </property>
     <property name="focusPolicy">
@@ -129,7 +156,7 @@
     <property name="geometry">
      <rect>
       <x>280</x>
-      <y>570</y>
+      <y>472</y>
       <width>291</width>
       <height>16</height>
      </rect>
@@ -142,7 +169,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>570</y>
+      <y>472</y>
       <width>80</width>
       <height>19</height>
      </rect>
@@ -155,7 +182,7 @@
     <property name="geometry">
      <rect>
       <x>810</x>
-      <y>170</y>
+      <y>118</y>
       <width>171</width>
       <height>91</height>
      </rect>
