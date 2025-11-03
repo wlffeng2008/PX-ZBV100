@@ -3,6 +3,7 @@
 
 #include "DialogSetting.h"
 #include "DialogConfig.h"
+#include "DialogTestLog.h"
 
 #include <QApplication>
 #include <QProxyStyle>
@@ -139,10 +140,11 @@ private:
 
     DialogSetting *m_pDlgSet = nullptr ;
     DialogConfig  *m_pDlgCfg = nullptr ;
+    DialogTestLog  *m_pDlgLog = nullptr ;
 
     bool m_colEnable[10]={true} ;
-
-    QTimer m_TMCheck ;
+    quint16 m_total = 0;
+    quint16 m_good = 0;
 
     void setItemResult(int row,int col,int result=0) ;
     void setRowResult(int row,int result=0) ;
@@ -150,5 +152,6 @@ private:
     void setResult(int result=0) ;
 
     void setItemColor(QStandardItem *item,int result=0) ;
+    void addLog() ;
 };
 #endif // MAINWINDOW_H

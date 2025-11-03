@@ -23,6 +23,7 @@ DESTDIR = ../../bin
 QMAKE_PROJECT_DEPTH = 0
 
 SOURCES += \
+    DialogTestLog.cpp \
     DialogConfig.cpp \
     DialogSetting.cpp \
     LogToFile.cpp \
@@ -31,6 +32,7 @@ SOURCES += \
     MainWindow.cpp
 
 HEADERS += \
+    DialogTestLog.h \
     DialogConfig.h \
     DialogSetting.h \
     LogToFile.h \
@@ -38,6 +40,7 @@ HEADERS += \
     gencomport.h
 
 FORMS += \
+    DialogTestLog.ui \
     DialogConfig.ui \
     DialogSetting.ui \
     MainWindow.ui

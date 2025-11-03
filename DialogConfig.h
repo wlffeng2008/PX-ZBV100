@@ -24,7 +24,9 @@ public:
     void SendTextCmd(const QString&text) ;
     void getMeter(quint8 id) ;
     int  getChanCount() ;
+    void reset() ;
 
+    void doTesting(int index);
     void setLED_R(int chanId,bool on=true);
     void setLED_G(int chanId,bool on=true);
 
@@ -34,9 +36,8 @@ public:
 
     void setGroupSwitch(int type,bool on=true) ;
 
-    void doTesting(int index);
+    bool isConnected() ;
 
-    Qt::CheckState  getChanState(int chanId) ;
     static DialogConfig *instance() ;
 
 signals:
@@ -59,10 +60,12 @@ private:
     QByteArray m_buf1 ;
     QByteArray m_buf2 ;
 
-    int m_readType = 0;
-    int m_readPort = 0;
+    quint8 m_readType = 0;
+    quint8 m_readPort = 0;
     float m_max = 10000 ;
     float m_min = -10000 ;
+    QList<quint8>m_reads ;
+    void readNext() ;
 
     void updateCOMStatus();
 };

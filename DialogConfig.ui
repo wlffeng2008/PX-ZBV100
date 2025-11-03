@@ -305,7 +305,7 @@
   <widget class="QGroupBox" name="groupBoxGSwitch">
    <property name="geometry">
     <rect>
-     <x>472</x>
+     <x>470</x>
      <y>452</y>
      <width>199</width>
      <height>131</height>
@@ -382,6 +382,32 @@
    </property>
    <property name="alignment">
     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="checkBoxRed">
+   <property name="geometry">
+    <rect>
+     <x>740</x>
+     <y>460</y>
+     <width>80</width>
+     <height>19</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Red</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="checkBoxGreen">
+   <property name="geometry">
+    <rect>
+     <x>740</x>
+     <y>490</y>
+     <width>80</width>
+     <height>19</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Green</string>
    </property>
   </widget>
  </widget>

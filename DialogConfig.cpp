@@ -3,6 +3,7 @@
 
 #include <QTimer>
 #include <QSettings>
+#include <QThread>
 
 static DialogConfig *pConfig = nullptr ;
 DialogConfig *DialogConfig::instance()
@@ -91,8 +92,8 @@ DialogConfig::DialogConfig(QWidget *parent)
     pHeader->setSectionResizeMode(0,QHeaderView::Fixed) ;
     pHeader->resizeSection(0,70) ;
 
-    m_pModelCOM->appendRow({new QStandardItem("串口"),new QStandardItem(m_pSet->value("COMPort1","COM4").toString()),new QStandardItem(m_pSet->value("COMPort2","COM5").toString())}) ;
-    m_pModelCOM->appendRow({new QStandardItem("波特率"),new QStandardItem(m_pSet->value("COMBaud1","115200").toString()),new QStandardItem(m_pSet->value("COMBaud1","9600").toString())}) ;
+    m_pModelCOM->appendRow({new QStandardItem("串口"),new QStandardItem(m_pSet->value("COMPort1","COM4").toString().trimmed()),new QStandardItem(m_pSet->value("COMPort2","COM5").toString().trimmed())}) ;
+    m_pModelCOM->appendRow({new QStandardItem("波特率"),new QStandardItem(m_pSet->value("COMBaud1","115200").toString().trimmed()),new QStandardItem(m_pSet->value("COMBaud2","9600").toString().trimmed())}) ;
     m_pModelCOM->appendRow({new QStandardItem("数据位"),new QStandardItem("8位"),new QStandardItem("8位")}) ;
     m_pModelCOM->appendRow({new QStandardItem("校验位"),new QStandardItem("无校验"),new QStandardItem("无校验")}) ;
     m_pModelCOM->appendRow({new QStandardItem("停止位"),new QStandardItem("1位"),new QStandardItem("1位")}) ;
@@ -123,10 +124,14 @@ DialogConfig::DialogConfig(QWidget *parent)
     m_pModelCOM->item(6,2)->setCheckable(true);
 
     connect(m_pModelCOM,&QStandardItemModel::itemChanged,this,[=](QStandardItem *item){
-        m_pSet->setValue("COMPort1",m_pModelCOM->item(0,1)->text());
-        m_pSet->setValue("COMPort2",m_pModelCOM->item(0,2)->text());
-        m_pSet->setValue("COMBaud1",m_pModelCOM->item(1,1)->text());
-        m_pSet->setValue("COMBaud2",m_pModelCOM->item(1,2)->text());
+        m_pSet->setValue("COMPort1",m_pModelCOM->item(0,1)->text().trimmed());
+        m_pSet->setValue("COMPort2",m_pModelCOM->item(0,2)->text().trimmed());
+        m_pSet->setValue("COMBaud1",m_pModelCOM->item(1,1)->text().trimmed());
+        m_pSet->setValue("COMBaud2",m_pModelCOM->item(1,2)->text().trimmed());
+    }) ;
+    QTimer::singleShot(100,this,[=]{
+        m_pModelCOM->item(6,1)->setCheckState(Qt::Checked) ;
+        m_pModelCOM->item(6,2)->setCheckState(Qt::Checked) ;
     }) ;
 
     m_pModelGSwitch = new QStandardItemModel(this);
@@ -178,15 +183,15 @@ DialogConfig::DialogConfig(QWidget *parent)
     QStringList Col4 = m_pSet->value("Col4","41,42,43,44,45,46,41,42,43,44,45,46,0").toString().split(',') ;
     QStringList Col5 = m_pSet->value("Col5","51C,53,55,57,59,5B,51,53,55,57,59,5B,0").toString().split(',') ;
     QStringList Col6 = m_pSet->value("Col6","50,52,54,56,58,5A,50,52,54,56,58,5A,0").toString().split(',') ;
-    m_pModelChan->appendRow({new QStandardItem("1"),new QStandardItem(""),new QStandardItem("30"),new QStandardItem("5C"),new QStandardItem("41"),new QStandardItem("51"),new QStandardItem("50")});
-    m_pModelChan->appendRow({new QStandardItem("2"),new QStandardItem(""),new QStandardItem("31"),new QStandardItem("5D"),new QStandardItem("42"),new QStandardItem("53"),new QStandardItem("52")});
-    m_pModelChan->appendRow({new QStandardItem("3"),new QStandardItem(""),new QStandardItem("32"),new QStandardItem("5E"),new QStandardItem("43"),new QStandardItem("55"),new QStandardItem("54")});
-    m_pModelChan->appendRow({new QStandardItem("4"),new QStandardItem(""),new QStandardItem("33"),new QStandardItem("5F"),new QStandardItem("44"),new QStandardItem("57"),new QStandardItem("56")});
-    m_pModelChan->appendRow({new QStandardItem("5"),new QStandardItem(""),new QStandardItem("34"),new QStandardItem("11"),new QStandardItem("45"),new QStandardItem("59"),new QStandardItem("58")});
-    m_pModelChan->appendRow({new QStandardItem("6"),new QStandardItem(""),new QStandardItem("35"),new QStandardItem("12"),new QStandardItem("46"),new QStandardItem("5B"),new QStandardItem("5A")});
-    m_pModelChan->appendRow({new QStandardItem("7"),new QStandardItem(""),new QStandardItem("30"),new QStandardItem("5C"),new QStandardItem("41"),new QStandardItem("51"),new QStandardItem("50")});
-    m_pModelChan->appendRow({new QStandardItem("8"),new QStandardItem(""),new QStandardItem("31"),new QStandardItem("5D"),new QStandardItem("42"),new QStandardItem("53"),new QStandardItem("52")});
-    m_pModelChan->appendRow({new QStandardItem("9"),new QStandardItem(""),new QStandardItem("32"),new QStandardItem("5E"),new QStandardItem("43"),new QStandardItem("55"),new QStandardItem("54")});
+    m_pModelChan->appendRow({new QStandardItem("1" ),new QStandardItem(""),new QStandardItem("30"),new QStandardItem("5C"),new QStandardItem("41"),new QStandardItem("51"),new QStandardItem("50")});
+    m_pModelChan->appendRow({new QStandardItem("2" ),new QStandardItem(""),new QStandardItem("31"),new QStandardItem("5D"),new QStandardItem("42"),new QStandardItem("53"),new QStandardItem("52")});
+    m_pModelChan->appendRow({new QStandardItem("3" ),new QStandardItem(""),new QStandardItem("32"),new QStandardItem("5E"),new QStandardItem("43"),new QStandardItem("55"),new QStandardItem("54")});
+    m_pModelChan->appendRow({new QStandardItem("4" ),new QStandardItem(""),new QStandardItem("33"),new QStandardItem("5F"),new QStandardItem("44"),new QStandardItem("57"),new QStandardItem("56")});
+    m_pModelChan->appendRow({new QStandardItem("5" ),new QStandardItem(""),new QStandardItem("34"),new QStandardItem("11"),new QStandardItem("45"),new QStandardItem("59"),new QStandardItem("58")});
+    m_pModelChan->appendRow({new QStandardItem("6" ),new QStandardItem(""),new QStandardItem("35"),new QStandardItem("12"),new QStandardItem("46"),new QStandardItem("5B"),new QStandardItem("5A")});
+    m_pModelChan->appendRow({new QStandardItem("7" ),new QStandardItem(""),new QStandardItem("30"),new QStandardItem("5C"),new QStandardItem("41"),new QStandardItem("51"),new QStandardItem("50")});
+    m_pModelChan->appendRow({new QStandardItem("8" ),new QStandardItem(""),new QStandardItem("31"),new QStandardItem("5D"),new QStandardItem("42"),new QStandardItem("53"),new QStandardItem("52")});
+    m_pModelChan->appendRow({new QStandardItem("9" ),new QStandardItem(""),new QStandardItem("32"),new QStandardItem("5E"),new QStandardItem("43"),new QStandardItem("55"),new QStandardItem("54")});
     m_pModelChan->appendRow({new QStandardItem("10"),new QStandardItem(""),new QStandardItem("33"),new QStandardItem("5F"),new QStandardItem("44"),new QStandardItem("57"),new QStandardItem("56")});
     m_pModelChan->appendRow({new QStandardItem("11"),new QStandardItem(""),new QStandardItem("34"),new QStandardItem("11"),new QStandardItem("45"),new QStandardItem("59"),new QStandardItem("58")});
     m_pModelChan->appendRow({new QStandardItem("12"),new QStandardItem(""),new QStandardItem("35"),new QStandardItem("12"),new QStandardItem("46"),new QStandardItem("5B"),new QStandardItem("5A")});
@@ -242,9 +247,9 @@ DialogConfig::DialogConfig(QWidget *parent)
         for(int i=0; i<12; i++)
         {
             emit onChanState(i,m_pModelChan->item(i,1)->checkState());
-            emit onReadBack(i,1,100.0,1) ;
-            emit onReadBack(i,2,120.0,1) ;
-            emit onReadBack(i,3,130.0,1) ;
+            //emit onReadBack(i,1,100.0,1) ;
+            //emit onReadBack(i,2,120.0,1) ;
+            //emit onReadBack(i,3,130.0,1) ;
         }
 
     });
@@ -325,7 +330,7 @@ DialogConfig::DialogConfig(QWidget *parent)
         if(Acq == data) emit onAutoTestAcq() ;
 
         m_buf2.append(data) ;
-        if(m_buf2.size() == 9)
+        if(m_buf2.size() >= 9)
         {
             QByteArray tmp;
             tmp.append(m_buf2[6]);
@@ -333,14 +338,16 @@ DialogConfig::DialogConfig(QWidget *parent)
             tmp.append(m_buf2[4]);
             tmp.append(m_buf2[3]);
 
-            float value =  *(float *) (tmp.data()) * 1000;
+            float value =  *(float *) (tmp.data()) ;
 
             int chanId = m_buf2[0] - m_readPort;
 
             bool ok = false ;
             if(m_max >= value && value >= m_min) ok = true ;
+
             emit onReadBack(chanId,m_readType + 1,value,ok);
-            if(ok) setLED_G(true); else setLED_R(true) ;
+
+            QTimer::singleShot(50,this,[=]{readNext() ;});
         }
     });
 
@@ -355,11 +362,38 @@ DialogConfig::DialogConfig(QWidget *parent)
         m_pCOM2->send(text,!ui->checkBoxHex2->isChecked());
     });
 
+    connect(ui->checkBoxRed,&QCheckBox::clicked,this,[=](bool checked){
+        for(int i=0; i<m_pModelChan->rowCount(); i++)
+        {
+            setLED_R(i,checked) ;
+        }
+    });
+
+    connect(ui->checkBoxGreen,&QCheckBox::clicked,this,[=](bool checked){
+        for(int i=0; i<m_pModelChan->rowCount(); i++)
+        {
+            setLED_G(i,checked) ;
+        }
+    });
 }
 
 DialogConfig::~DialogConfig()
 {
     delete ui;
+}
+
+bool DialogConfig::isConnected()
+{
+    return (m_pCOM1 && m_pCOM1->isOpen() && m_pCOM2 && m_pCOM2->isOpen());
+}
+
+void DialogConfig::reset()
+{
+    for(int i=0; i<m_pModelChan->rowCount(); i++)
+    {
+        setLED_R(i,false) ;
+        setLED_G(i,false) ;
+    }
 }
 
 
@@ -368,10 +402,6 @@ int DialogConfig::getChanCount()
     return m_pModelChan->rowCount();
 }
 
-Qt::CheckState DialogConfig::getChanState(int chanId)
-{
-    return m_pModelChan->item(chanId,1)->checkState() ;
-}
 
 void DialogConfig::updateCOMStatus()
 {
@@ -455,13 +485,17 @@ void DialogConfig::getMeter(quint8 id)
 void DialogConfig::setLED_R(int chanId,bool on)
 {
     QStandardItem *item = m_pModelChan->item(chanId,5) ;
-    item->setCheckState(on ?Qt::Checked:Qt::Unchecked) ;
+    Qt::CheckState state = on ? Qt::Checked:Qt::Unchecked;
+    item->setCheckState(state) ;
+    setWitch(item->text().toInt(nullptr,16),on) ;
 }
 
 void DialogConfig::setLED_G(int chanId,bool on)
 {
     QStandardItem *item = m_pModelChan->item(chanId,6) ;
-    item->setCheckState(on ?Qt::Checked:Qt::Unchecked) ;
+    Qt::CheckState state = on ? Qt::Checked:Qt::Unchecked;
+    item->setCheckState(state) ;
+    setWitch(item->text().toInt(nullptr,16),on) ;
 }
 
 void DialogConfig::setGSwitch(int type,bool on)
@@ -479,17 +513,30 @@ void DialogConfig::setGSwitch(int type,bool on)
 
 void DialogConfig::readGroup(int type)
 {
-    m_max = m_pModelTGroup->item(type,2)->text().trimmed().toFloat() ;
-    m_min = m_pModelTGroup->item(type,3)->text().trimmed().toFloat() ;
+    m_max = m_pModelTGroup->item(type,3)->text().trimmed().toFloat() ;
+    m_min = m_pModelTGroup->item(type,2)->text().trimmed().toFloat() ;
 
     quint8 port = m_pModelTGroup->item(type,1)->text().trimmed().toInt() ;
     m_readPort = port;
     m_readType = type;
-    for(int i=0; i<m_pModelTGroup->rowCount(); i++)
+    m_reads.clear() ;
+    for(int i=0; i<m_pModelChan->rowCount(); i++)
     {
-        if(m_pModelChan->item(i,0)->checkState() != Qt::Checked)
-            continue;
-        getMeter(port + i) ;
+        if(m_pModelChan->item(i,1)->checkState() == Qt::Checked)
+        {
+            m_reads.push_back(port + i);
+        }
+    }
+    readNext() ;
+}
+
+void DialogConfig::readNext()
+{
+    if(m_reads.count())
+    {
+        quint8 port = m_reads[0] ;
+        m_reads.pop_front();
+        getMeter(port) ;
     }
 }
 

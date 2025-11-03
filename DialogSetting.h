@@ -64,6 +64,7 @@ public:
 
 signals:
     void onTestOption(int item,bool enable);
+    void onTestToEnd();
 
 private:
     Ui::DialogSetting *ui;

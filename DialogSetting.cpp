@@ -140,6 +140,7 @@ DialogSetting::DialogSetting(QWidget *parent)
         if(index == 21)
         {
             m_nTestIndex = -1 ;
+            emit onTestToEnd();
             return ;
         }
 
@@ -150,7 +151,7 @@ DialogSetting::DialogSetting(QWidget *parent)
         m_cfg->doTesting(index) ;
 
         QString strTime = m_pModel1->item(index,2)->text() ;
-        m_TMTest.start(strTime.toInt() + 100) ;
+        m_TMTest.start(strTime.toInt() + ((index==10 || index==17) ? 1000 : 100)) ;
     });
 }
 
@@ -163,6 +164,7 @@ void DialogSetting::startTest()
 {
     if(m_nTestIndex != -1)
         return ;
+    m_nTestIndex = -1 ;
     for(int i=0; i<m_pModel1->rowCount(); i++)
         m_pModel1->item(i,3)->setText("") ;
     m_TMTest.start(10) ;

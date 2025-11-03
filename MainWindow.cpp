@@ -5,6 +5,11 @@
 #include <QHeaderView>
 #include <QTimer>
 #include <QWindow>
+#include <QFile>
+#include <QDateTime>
+#include <QDir>
+#include <QApplication>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -42,6 +47,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     m_pDlgCfg = new DialogConfig(this) ;
     m_pDlgSet = new DialogSetting(this);
+    m_pDlgLog = new DialogTestLog(this);
 
     connect(ui->checkBoxOntop,&QCheckBox::clicked,this,[=](bool checked){
         QWindow *pWin = windowHandle() ;
@@ -58,6 +64,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->pushButtonConfig,&QPushButton::clicked,this,[=]{
         m_pDlgCfg->show();
+    });
+
+    connect(ui->pushButtonLog,&QPushButton::clicked,this,[=]{
+        m_pDlgLog->show();
     });
 
     connect(m_pDlgCfg,&DialogConfig::onChanState,this,[=](int row,Qt::CheckState state){
@@ -135,10 +145,17 @@ MainWindow::MainWindow(QWidget *parent)
     ui->labelStatus->setStyleSheet("QLabel{border:2px solid gray;}") ;
 
     connect(ui->pushButtonRun,&QPushButton::clicked,this,[=]{
+        if(!m_pDlgCfg->isConnected())
+        {
+            QMessageBox::critical(this,"错误","串口尚未全部连接，请检查后重试！");
+            return;
+        }
+
         setResult(0);
         ui->labelStatus->setText("正在测试") ;
         ui->labelStatus->setStyleSheet("QLabel{border:2px solid skyblue;border-radius:10px;background-color:gray;color:white}") ;
 
+        m_pDlgCfg->reset() ;
         m_pDlgSet->startTest() ;
     });
 
@@ -166,26 +183,37 @@ MainWindow::MainWindow(QWidget *parent)
 
         m_pModel1->item(chan,col)->setText(QString::asprintf("%.3f",value));
         setItemResult(chan, col, ok ? 1 : 2) ;
-
-        {
-            m_TMCheck.stop();
-            m_TMCheck.start(500);
-        }
-
     }) ;
 
-    connect(&m_TMCheck,&QTimer::timeout,this,[=]{
-        m_TMCheck.stop();
+    connect(m_pDlgSet,&DialogSetting::onTestToEnd,this,[=]{
         bool bAllOk = true ;
+        int total = 0 ;
+        int good =0 ;
         for(int i=0; i<m_pModel1->rowCount(); i++)
         {
-            if(m_pModel1->item(i,0)->checkState() == Qt::Checked && !isRowPassed(i))
-                bAllOk = false ;
+            if(m_pModel1->item(i,0)->checkState() == Qt::Checked)
+            {
+                m_total ++ ;
+                total++ ;
+                bool ok = isRowPassed(i);
+                if(ok)
+                {
+                    m_good ++ ;
+                    good++ ;
+                    m_pDlgCfg->setLED_R(i,false) ;
+                    m_pDlgCfg->setLED_G(i,true);
+                }
+                else
+                {
+                    bAllOk = false ;
+                    m_pDlgCfg->setLED_R(i,true) ;
+                    m_pDlgCfg->setLED_G(i,false);
+                }
+            }
         }
 
         if(bAllOk)
         {
-            qDebug() << "!!!!!!!!!!" ;
             ui->labelStatus->setText("PASS") ;
             ui->labelStatus->setStyleSheet("QLabel{border:2px solid gray;border-radius:10px; background-color:green; color:white;}") ;
         }
@@ -194,12 +222,65 @@ MainWindow::MainWindow(QWidget *parent)
             ui->labelStatus->setText("NG") ;
             ui->labelStatus->setStyleSheet("QLabel{border:2px solid gray;border-radius:10px;background-color:red;color:white;}") ;
         }
+
+        QString strTotal = QString::asprintf("%d",m_total);
+        QString strPass  = QString::asprintf("%d",m_good);
+        QString strRate  = QString::asprintf("%.2f%%",m_good*100.0/m_total);
+        m_pModel2->item(0,1)->setText(strTotal);
+        m_pModel2->item(1,1)->setText(strPass);
+        m_pModel2->item(2,1)->setText(strRate);
+
+        addLog() ;
+
+        QMessageBox::information(this,"提示",QString("测试完毕！") + (good== total ? "(全部通过)" : "(部分通过)") );
+
     });
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::addLog()
+{
+    QString strPath(QCoreApplication::applicationDirPath() + "/TestLog");
+    QDir dir(strPath);
+    if(!dir.exists()) dir.mkpath(strPath);
+    QString strFile = strPath + QString("/TestLog-%1.txt").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd")) ;
+
+    QFile file(strFile);
+    bool bExist = file.exists();
+    if (!file.open(QIODevice::Append | QIODevice::Text))
+    {
+        QMessageBox::critical(this,"错误","文件创建失败，无法写入测试记录！");
+        return ;
+    }
+
+    QTextStream out(&file);
+    if(!bExist)
+    {
+        QString strLine= "测试时间,通道号,静态电流(uA),吸烟电流(mA),充电电流(mA),充满电压(mV),输出电压(mV),启动气压(Pa),结果\n" ;
+        out << strLine ;
+    }
+
+    QString strTime = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss") ;
+    int nCount = m_pModel1->rowCount();
+    for(int i=0; i<nCount; i++)
+    {
+        if(m_pModel1->item(i,0)->checkState() == Qt::Unchecked)
+            continue ;
+        QString strLine = QString("%1,%2,%3,%4,%5,%6,%7,%8,%9\n").arg(strTime)
+            .arg(m_pModel1->item(i,0)->text().trimmed())
+            .arg(m_pModel1->item(i,1)->text().trimmed())
+            .arg(m_pModel1->item(i,2)->text().trimmed())
+            .arg(m_pModel1->item(i,3)->text().trimmed())
+            .arg(m_pModel1->item(i,4)->text().trimmed())
+            .arg(m_pModel1->item(i,5)->text().trimmed())
+            .arg(m_pModel1->item(i,6)->text().trimmed())
+            .arg(m_pModel1->item(i,7)->data(Qt::UserRole+1).value<int>() == 1 ? "PASS" : "NG");
+        out << strLine ;
+    }
 }
 
 bool MainWindow::isRowPassed(int row)
