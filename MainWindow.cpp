@@ -10,6 +10,7 @@
 #include <QDir>
 #include <QApplication>
 #include <QMessageBox>
+#include <QSettings>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -72,7 +73,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_pDlgCfg,&DialogConfig::onChanState,this,[=](int row,Qt::CheckState state){
         m_pModel1->item(row,0)->setCheckState(state);
-        for(int i=1; i<7; i++)
+        for(int i=1; i<8; i++)
         {
             m_pModel1->item(row,i)->setEnabled((state == Qt::Checked) && m_colEnable[i]);
         }
@@ -142,7 +143,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_pModel2->item(2,0)->setTextAlignment(Qt::AlignVCenter|Qt::AlignRight) ;
 
     ui->tableView2->setStyleSheet("QTableView { border-right: none; border-bottom: none; font: bold 12px 微软雅黑;}") ;
-    ui->labelStatus->setStyleSheet("QLabel{border:2px solid gray;}") ;
+    //ui->labelStatus->setStyleSheet("QLabel{border:2px solid gray;}") ;
 
     connect(ui->pushButtonRun,&QPushButton::clicked,this,[=]{
         if(!m_pDlgCfg->isConnected())
@@ -194,12 +195,12 @@ MainWindow::MainWindow(QWidget *parent)
             if(m_pModel1->item(i,0)->checkState() == Qt::Checked)
             {
                 m_total ++ ;
-                total++ ;
+                total ++ ;
                 bool ok = isRowPassed(i);
                 if(ok)
                 {
                     m_good ++ ;
-                    good++ ;
+                    good ++ ;
                     m_pDlgCfg->setLED_R(i,false) ;
                     m_pDlgCfg->setLED_G(i,true);
                 }
@@ -214,7 +215,7 @@ MainWindow::MainWindow(QWidget *parent)
 
         if(bAllOk)
         {
-            ui->labelStatus->setText("PASS") ;
+            ui->labelStatus->setText("PASS");
             ui->labelStatus->setStyleSheet("QLabel{border:2px solid gray;border-radius:10px; background-color:green; color:white;}") ;
         }
         else
@@ -229,17 +230,44 @@ MainWindow::MainWindow(QWidget *parent)
         m_pModel2->item(0,1)->setText(strTotal);
         m_pModel2->item(1,1)->setText(strPass);
         m_pModel2->item(2,1)->setText(strRate);
+        saveLoadTestCount() ;
 
         addLog() ;
 
-        QMessageBox::information(this,"提示",QString("测试完毕！") + (good== total ? "(全部通过)" : "(部分通过)") );
-
+        if(m_pDlgCfg->isTestNotify())
+            QMessageBox::information(this,"提示",QString("测试完毕！") + (good== total ? "(全部通过)" : "(部分通过)") );
     });
+
+    saveLoadTestCount(false);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::saveLoadTestCount(bool save)
+{
+    QSettings set(QCoreApplication::applicationDirPath()+"/TestCount.ini",QSettings::IniFormat);
+    QString strDate = QDateTime::currentDateTime().toString("yyyy-MM-dd");
+    QString strTotal= "Total" + strDate ;
+    QString strGood= "Good" + strDate ;
+    QString strRate= "Rate" + strDate ;
+    if(save)
+    {
+        set.setValue(strTotal,m_total);
+        set.setValue(strGood,m_good);
+        if(m_total)
+            set.setValue(strRate,m_good*100.0/m_total);
+    }
+    else
+    {
+        m_total = set.value(strTotal).toInt();
+        m_good  = set.value(strGood).toInt();
+        m_pModel2->item(0,1)->setText(set.value(strTotal,"0").toString());
+        m_pModel2->item(1,1)->setText(set.value(strGood,"0").toString());
+        m_pModel2->item(2,1)->setText(set.value(strRate,"0.00%").toString());
+    }
 }
 
 void MainWindow::addLog()

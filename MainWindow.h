@@ -66,8 +66,8 @@ protected:
         QStandardItem *item = pModel->itemFromIndex(index) ;
         if(!item->isEnabled())
         {
-            QStyledItemDelegate::paint(painter, option, index) ;
-            return ;
+            //QStyledItemDelegate::paint(painter, option, index) ;
+            //return ;
         }
 
         painter->save() ;
@@ -82,6 +82,7 @@ protected:
         if(col == 7) text = "待测试" ;
         if(result == 1){bkBrush = QBrush(0x00A000); frColor = Qt::white; if(col == 7) text = "PASS";}
         if(result == 2){bkBrush = QBrush(Qt::red);  frColor = Qt::white; if(col == 7) text = "NG";  }
+        if(!item->isEnabled()){bkBrush = QBrush(Qt::lightGray);  frColor = Qt::white; if(col == 7) text = "--";  }
 
         painter->setFont(item->data(Qt::FontRole).value<QFont>()) ;
         painter->setPen(frColor) ;
@@ -153,5 +154,6 @@ private:
 
     void setItemColor(QStandardItem *item,int result=0) ;
     void addLog() ;
+    void saveLoadTestCount(bool save=true) ;
 };
 #endif // MAINWINDOW_H

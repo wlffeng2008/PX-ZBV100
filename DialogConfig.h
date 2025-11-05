@@ -37,6 +37,7 @@ public:
     void setGroupSwitch(int type,bool on=true) ;
 
     bool isConnected() ;
+    bool isTestNotify();
 
     static DialogConfig *instance() ;
 
@@ -60,6 +61,7 @@ private:
     QByteArray m_buf1 ;
     QByteArray m_buf2 ;
 
+    bool m_bOutset=false ;
     quint8 m_readType = 0;
     quint8 m_readPort = 0;
     float m_max = 10000 ;

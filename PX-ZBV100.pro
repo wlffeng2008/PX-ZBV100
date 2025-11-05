@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui mqtt
 QT       += serialport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -19,6 +19,8 @@ QMAKE_TARGET_COPYRIGHT = "鹏翔半导体 版权所有(2025.10)"
 RC_LANG = 0x0004
 
 DESTDIR = ../../bin
+
+#QMAKE_LFLAGS_WINDOWS += /MANIFESTUAC:"level='requireAdministrator' uiAccess='false'"
 
 QMAKE_PROJECT_DEPTH = 0
 

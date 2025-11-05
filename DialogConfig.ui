@@ -387,8 +387,8 @@
   <widget class="QCheckBox" name="checkBoxRed">
    <property name="geometry">
     <rect>
-     <x>740</x>
-     <y>460</y>
+     <x>686</x>
+     <y>458</y>
      <width>80</width>
      <height>19</height>
     </rect>
@@ -400,14 +400,27 @@
   <widget class="QCheckBox" name="checkBoxGreen">
    <property name="geometry">
     <rect>
-     <x>740</x>
-     <y>490</y>
+     <x>686</x>
+     <y>488</y>
      <width>80</width>
      <height>19</height>
     </rect>
    </property>
    <property name="text">
     <string>Green</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="checkBoxNoitfy">
+   <property name="geometry">
+    <rect>
+     <x>474</x>
+     <y>634</y>
+     <width>191</width>
+     <height>19</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>测试完成弹框提示</string>
    </property>
   </widget>
  </widget>

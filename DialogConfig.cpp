@@ -195,36 +195,25 @@ DialogConfig::DialogConfig(QWidget *parent)
     m_pModelChan->appendRow({new QStandardItem("10"),new QStandardItem(""),new QStandardItem("33"),new QStandardItem("5F"),new QStandardItem("44"),new QStandardItem("57"),new QStandardItem("56")});
     m_pModelChan->appendRow({new QStandardItem("11"),new QStandardItem(""),new QStandardItem("34"),new QStandardItem("11"),new QStandardItem("45"),new QStandardItem("59"),new QStandardItem("58")});
     m_pModelChan->appendRow({new QStandardItem("12"),new QStandardItem(""),new QStandardItem("35"),new QStandardItem("12"),new QStandardItem("46"),new QStandardItem("5B"),new QStandardItem("5A")});
-    for(int i=0; i<12; i++)
-    {
-        m_pModelChan->item(i,0)->setTextAlignment(Qt::AlignRight|Qt::AlignVCenter);
-        m_pModelChan->item(i,0)->setSelectable(false);
-        m_pModelChan->item(i,0)->setEditable(false);
-        m_pModelChan->item(i,1)->setEditable(false);
-        for(int j=1; j<=6; j++)
-            m_pModelChan->item(i,j)->setCheckable(true);
-
-        m_pModelChan->item(i,1)->setCheckState(Col1[i] == "1" ? Qt::Checked:Qt::Unchecked);
-        m_pModelChan->item(i,2)->setText(Col2[i]) ;
-        m_pModelChan->item(i,3)->setText(Col3[i]) ;
-        m_pModelChan->item(i,4)->setText(Col4[i]) ;
-        m_pModelChan->item(i,5)->setText(Col5[i]) ;
-        m_pModelChan->item(i,6)->setText(Col6[i]) ;
-    }
 
     connect(m_pModelChan,&QStandardItemModel::itemChanged,this,[=](QStandardItem *item)
     {
         int row = item->row();
         int col = item->column();
-        if(col >= 2) setWitch(item->text().trimmed().toUInt(nullptr,16),item->checkState() == Qt::Checked) ;
-        if(col == 1) emit onChanState(row,item->checkState()) ;
+        if(col >= 2 && !m_bOutset) setWitch(item->text().trimmed().toUInt(nullptr,16),item->checkState() == Qt::Checked) ;
+        if(col == 1)
+        {
+            emit onChanState(row,item->checkState()) ;
+            for(int i=2; i<=6; i++)
+                m_pModelChan->item(row,i)->setEnabled(item->checkState()==Qt::Checked);
+        }
 
-        QString strCol1 ;
-        QString strCol2 ;
-        QString strCol3 ;
+        QString strCol1;
+        QString strCol2;
+        QString strCol3;
         QString strCol4;
-        QString strCol5 ;
-        QString strCol6 ;
+        QString strCol5;
+        QString strCol6;
         for(int i=0; i<12; i++)
         {
             strCol1 += (m_pModelChan->item(i,1)->checkState() == Qt::Checked) ? "1,":"0,";
@@ -242,16 +231,32 @@ DialogConfig::DialogConfig(QWidget *parent)
         m_pSet->setValue("Col6",strCol6);
     });
 
+    for(int i=0; i<12; i++)
+    {
+        m_pModelChan->item(i,0)->setTextAlignment(Qt::AlignRight|Qt::AlignVCenter);
+        m_pModelChan->item(i,0)->setSelectable(false);
+        m_pModelChan->item(i,0)->setEditable(false);
+        m_pModelChan->item(i,1)->setEditable(false);
+        for(int j=1; j<=6; j++)
+            m_pModelChan->item(i,j)->setCheckable(true);
+
+        m_pModelChan->item(i,1)->setCheckState(Col1[i] == "1" ? Qt::Checked:Qt::Unchecked);
+        m_pModelChan->item(i,2)->setText(Col2[i]) ;
+        m_pModelChan->item(i,3)->setText(Col3[i]) ;
+        m_pModelChan->item(i,4)->setText(Col4[i]) ;
+        m_pModelChan->item(i,5)->setText(Col5[i]) ;
+        m_pModelChan->item(i,6)->setText(Col6[i]) ;
+    }
+
     QTimer::singleShot(500,this,[=]{
         srand(time(nullptr));
         for(int i=0; i<12; i++)
         {
             emit onChanState(i,m_pModelChan->item(i,1)->checkState());
-            //emit onReadBack(i,1,100.0,1) ;
-            //emit onReadBack(i,2,120.0,1) ;
-            //emit onReadBack(i,3,130.0,1) ;
+            // emit onReadBack(i,1,100.0,1) ;
+            // emit onReadBack(i,2,120.0,1) ;
+            // emit onReadBack(i,3,130.0,1) ;
         }
-
     });
 
     // connect(ui->spinBox,&QSpinBox::valueChanged,this,[=](int value){
@@ -289,7 +294,7 @@ DialogConfig::DialogConfig(QWidget *parent)
 
                 if( checked )
                 {
-                    m_pCOM1->setPortName(m_pModelCOM->item(0,1)->text().trimmed()) ;
+                    m_pCOM1->setPortName (m_pModelCOM->item(0,1)->text().trimmed()) ;
                     m_pCOM1->setPortParam(m_pModelCOM->item(1,1)->text().toInt()) ;
                     m_pCOM1->openPort() ;
                 }
@@ -301,7 +306,7 @@ DialogConfig::DialogConfig(QWidget *parent)
 
                 if( checked )
                 {
-                    m_pCOM2->setPortName(m_pModelCOM->item(0,2)->text().trimmed()) ;
+                    m_pCOM2->setPortName (m_pModelCOM->item(0,2)->text().trimmed()) ;
                     m_pCOM2->setPortParam(m_pModelCOM->item(1,2)->text().toInt()) ;
                     m_pCOM2->openPort() ;
                 }
@@ -327,7 +332,6 @@ DialogConfig::DialogConfig(QWidget *parent)
             ui->textEdit2->setText(data.toHex(' ').toUpper());
         else
             ui->textEdit2->setText(data.data());
-        if(Acq == data) emit onAutoTestAcq() ;
 
         m_buf2.append(data) ;
         if(m_buf2.size() >= 9)
@@ -347,7 +351,7 @@ DialogConfig::DialogConfig(QWidget *parent)
 
             emit onReadBack(chanId,m_readType + 1,value,ok);
 
-            QTimer::singleShot(50,this,[=]{readNext() ;});
+            QTimer::singleShot(50,this,[=]{ readNext(); });
         }
     });
 
@@ -365,21 +369,33 @@ DialogConfig::DialogConfig(QWidget *parent)
     connect(ui->checkBoxRed,&QCheckBox::clicked,this,[=](bool checked){
         for(int i=0; i<m_pModelChan->rowCount(); i++)
         {
-            setLED_R(i,checked) ;
+            if(m_pModelChan->item(i,1)->checkState() == Qt::Checked)
+                setLED_R(i,checked) ;
         }
     });
 
     connect(ui->checkBoxGreen,&QCheckBox::clicked,this,[=](bool checked){
         for(int i=0; i<m_pModelChan->rowCount(); i++)
         {
-            setLED_G(i,checked) ;
+            if(m_pModelChan->item(i,1)->checkState() == Qt::Checked)
+                setLED_G(i,checked) ;
         }
+    });
+
+    ui->checkBoxNoitfy->setChecked(m_pSet->value("TestNotify").toBool());
+    connect(ui->checkBoxNoitfy,&QCheckBox::clicked,this,[=](bool checked){
+        m_pSet->setValue("TestNotify",checked);
     });
 }
 
 DialogConfig::~DialogConfig()
 {
     delete ui;
+}
+
+bool DialogConfig::isTestNotify()
+{
+    return ui->checkBoxNoitfy->isChecked() ;
 }
 
 bool DialogConfig::isConnected()
@@ -484,18 +500,22 @@ void DialogConfig::getMeter(quint8 id)
 
 void DialogConfig::setLED_R(int chanId,bool on)
 {
+    m_bOutset=true ;
     QStandardItem *item = m_pModelChan->item(chanId,5) ;
     Qt::CheckState state = on ? Qt::Checked:Qt::Unchecked;
     item->setCheckState(state) ;
     setWitch(item->text().toInt(nullptr,16),on) ;
+    m_bOutset=false ;
 }
 
 void DialogConfig::setLED_G(int chanId,bool on)
 {
+    m_bOutset=true ;
     QStandardItem *item = m_pModelChan->item(chanId,6) ;
     Qt::CheckState state = on ? Qt::Checked:Qt::Unchecked;
     item->setCheckState(state) ;
     setWitch(item->text().toInt(nullptr,16),on) ;
+    m_bOutset=false ;
 }
 
 void DialogConfig::setGSwitch(int type,bool on)
