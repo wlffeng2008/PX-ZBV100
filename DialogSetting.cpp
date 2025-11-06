@@ -36,24 +36,24 @@ DialogSetting::DialogSetting(QWidget *parent)
 
     addTestItem("上电后等待时间") ; // 2----------
 
-    addTestItem("读取各通道静态电流") ;  // 3 x
+    addTestItem("读取各通道静态电流",true) ;  // 3 x
     addTestItem("各通道切换电流表开关打开") ;
 
     addTestItem("静态电流总控开关1/2关闭") ;
     addTestItem("各通道静态电流开关关闭") ;
 
-    addTestItem("吸烟气泵开关打开") ;
+    addTestItem("吸烟气泵开关打开",true) ;
 
-    addTestItem("开气泵后等待时间") ; // 8-----------
+    addTestItem("开气泵后等待时间",true) ; // 8-----------
 
     addTestItem("读取各通道启动气压",true) ;  //9 x
 
-    addTestItem("读取各通道吸烟电流") ; // 10 x
+    addTestItem("读取各通道吸烟电流",true) ; // 10 x
 
     addTestItem("读取各通道输出电压",true) ; //11 x
     addTestItem("吸烟时间",true) ;  //12 -----------
 
-    addTestItem("吸烟气泵开关关闭") ;
+    addTestItem("吸烟气泵开关关闭",true) ;
 
     addTestItem("吸烟结束等待时间",true) ; //14   ----------
     addTestItem("各通道充电开关打开",true) ; //15
@@ -65,17 +65,16 @@ DialogSetting::DialogSetting(QWidget *parent)
 
     addTestItem("各通道切换电流表开关关闭") ;
 
-    m_pModel1->item( 9,1)->setCheckState(m_pSet->value("ChanAirPress"  ).toBool()?Qt::Checked:Qt::Unchecked) ;      //9
-    m_pModel1->item(11,1)->setCheckState(m_pSet->value("ChanOutVoltage").toBool()?Qt::Checked:Qt::Unchecked) ;      //11
-    m_pModel1->item(12,1)->setCheckState(m_pSet->value("SmokingEnable" ).toBool()?Qt::Checked:Qt::Unchecked) ;      //12
-    m_pModel1->item(14,1)->setCheckState(m_pSet->value("SmokingWaiting").toBool()?Qt::Checked:Qt::Unchecked) ;      //14
-    m_pModel1->item(15,1)->setCheckState(m_pSet->value("ChanChargeOn"  ).toBool()?Qt::Checked:Qt::Unchecked) ;      //15
-    m_pModel1->item(16,1)->setCheckState(m_pSet->value("ChargeWaiting" ).toBool()?Qt::Checked:Qt::Unchecked) ;      //16
-    m_pModel1->item(17,1)->setCheckState(m_pSet->value("ChargeCurrent" ).toBool()?Qt::Checked:Qt::Unchecked) ;      //17
-    m_pModel1->item(18,1)->setCheckState(m_pSet->value("ChargeOccuring").toBool()?Qt::Checked:Qt::Unchecked) ;      //18
-    m_pModel1->item(19,1)->setCheckState(m_pSet->value("ChargeVoltage" ).toBool()?Qt::Checked:Qt::Unchecked) ;      //19
-    m_pModel1->item(20,1)->setCheckState(m_pSet->value("ChanChargeOff" ).toBool()?Qt::Checked:Qt::Unchecked) ;      //20
-
+    int j=0;
+    QStringList flags = m_pSet->value("TestEnable","1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1").toString().split(",");
+    for(int i=0; i<m_pModel1->rowCount(); i++)
+    {
+        QStandardItem *item = m_pModel1->item(i,1) ;
+        if(item->isCheckable())
+        {
+            item->setCheckState(flags[j++] == "1" ? Qt::Checked : Qt::Unchecked);
+        }
+    }
     QString strTimes= m_pSet->value("WaitTimes","6000,500,500,200,1000,2000,1000").toString();
     QStringList Times = strTimes.split(',');
     m_pModel1->item(2, 2)->setText(Times[0]) ;
@@ -93,16 +92,17 @@ DialogSetting::DialogSetting(QWidget *parent)
     m_pModel1->item(18,2)->setEditable(true) ;
 
     connect(m_pModel1,&QStandardItemModel::itemChanged,this,[=](QStandardItem *item){
-        m_pSet->setValue("ChanAirPress"  ,m_pModel1->item( 9,1)->checkState() == Qt::Checked);     //9
-        m_pSet->setValue("ChanOutVoltage",m_pModel1->item(11,1)->checkState() == Qt::Checked);     //11
-        m_pSet->setValue("SmokingEnable" ,m_pModel1->item(12,1)->checkState() == Qt::Checked);     //12
-        m_pSet->setValue("SmokingWaiting",m_pModel1->item(13,1)->checkState() == Qt::Checked);     //14
-        m_pSet->setValue("ChanChargeOn"  ,m_pModel1->item(15,1)->checkState() == Qt::Checked);     //15
-        m_pSet->setValue("ChargeWaiting" ,m_pModel1->item(16,1)->checkState() == Qt::Checked);     //16
-        m_pSet->setValue("ChargeCurrent" ,m_pModel1->item(17,1)->checkState() == Qt::Checked);     //17
-        m_pSet->setValue("ChargeOccuring",m_pModel1->item(18,1)->checkState() == Qt::Checked);     //18
-        m_pSet->setValue("ChargeVoltage" ,m_pModel1->item(19,1)->checkState() == Qt::Checked);     //19
-        m_pSet->setValue("ChanChargeOff" ,m_pModel1->item(20,1)->checkState() == Qt::Checked);     //20
+
+        QString flags;
+        for(int i=0; i<m_pModel1->rowCount(); i++)
+        {
+            QStandardItem *item = m_pModel1->item(i,1) ;
+            if(item->isCheckable())
+            {
+                flags += item->checkState() == Qt::Checked ? "1," : "0,";
+            }
+        }
+        m_pSet->setValue("TestEnable",flags);
 
         QString strTime;
         strTime += m_pModel1->item(2, 2)->text() + ",";
@@ -119,8 +119,11 @@ DialogSetting::DialogSetting(QWidget *parent)
     });
 
     QTimer::singleShot(100,this,[=]{
+        emit onTestOption(3, m_pModel1->item(3, 1)->checkState() == Qt::Checked);
         emit onTestOption(9, m_pModel1->item(9, 1)->checkState() == Qt::Checked);
+        emit onTestOption(10,m_pModel1->item(10,1)->checkState() == Qt::Checked);
         emit onTestOption(11,m_pModel1->item(11,1)->checkState() == Qt::Checked);
+        emit onTestOption(17,m_pModel1->item(17,1)->checkState() == Qt::Checked);
         emit onTestOption(19,m_pModel1->item(19,1)->checkState() == Qt::Checked);
     });
 
