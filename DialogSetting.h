@@ -61,6 +61,7 @@ public:
     ~DialogSetting();
 
     void startTest();
+    void toTheEnd() ;
 
 signals:
     void onTestOption(int item,bool enable);

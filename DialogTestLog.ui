@@ -22,6 +22,12 @@
      <height>581</height>
     </rect>
    </property>
+   <property name="focusPolicy">
+    <enum>Qt::FocusPolicy::NoFocus</enum>
+   </property>
+   <property name="selectionMode">
+    <enum>QAbstractItemView::SelectionMode::SingleSelection</enum>
+   </property>
    <property name="selectionBehavior">
     <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
    </property>
@@ -35,6 +41,9 @@
      <height>581</height>
     </rect>
    </property>
+   <property name="focusPolicy">
+    <enum>Qt::FocusPolicy::NoFocus</enum>
+   </property>
    <property name="selectionMode">
     <enum>QAbstractItemView::SelectionMode::SingleSelection</enum>
    </property>
@@ -47,7 +56,7 @@
     <rect>
      <x>10</x>
      <y>600</y>
-     <width>91</width>
+     <width>87</width>
      <height>31</height>
     </rect>
    </property>

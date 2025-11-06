@@ -21,6 +21,10 @@ private:
 
     QStandardItemModel *m_pModel1 = nullptr ;
     QStandardItemModel *m_pModel2 = nullptr ;
+
+    QModelIndex m_index;
+    QString m_strOldname;
+    bool m_bLoading=false;
     int m_total = 0 ;
     int m_good = 0 ;
     QString m_strLogFile ;

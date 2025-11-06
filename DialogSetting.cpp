@@ -36,7 +36,7 @@ DialogSetting::DialogSetting(QWidget *parent)
 
     addTestItem("上电后等待时间") ; // 2----------
 
-    addTestItem("读取各通道静态电流") ;
+    addTestItem("读取各通道静态电流") ;  // 3 x
     addTestItem("各通道切换电流表开关打开") ;
 
     addTestItem("静态电流总控开关1/2关闭") ;
@@ -46,11 +46,11 @@ DialogSetting::DialogSetting(QWidget *parent)
 
     addTestItem("开气泵后等待时间") ; // 8-----------
 
-    addTestItem("读取各通道启动气压",true) ;  //9
+    addTestItem("读取各通道启动气压",true) ;  //9 x
 
-    addTestItem("读取各通道吸烟电流") ;
+    addTestItem("读取各通道吸烟电流") ; // 10 x
 
-    addTestItem("读取各通道输出电压",true) ; //11
+    addTestItem("读取各通道输出电压",true) ; //11 x
     addTestItem("吸烟时间",true) ;  //12 -----------
 
     addTestItem("吸烟气泵开关关闭") ;
@@ -58,18 +58,12 @@ DialogSetting::DialogSetting(QWidget *parent)
     addTestItem("吸烟结束等待时间",true) ; //14   ----------
     addTestItem("各通道充电开关打开",true) ; //15
     addTestItem("开始充电等待时间",true) ;  //16 ------------
-    addTestItem("读取各通道充电电流",true) ;  //17
+    addTestItem("读取各通道充电电流",true) ;  //17 x
     addTestItem("充电时间",true) ;  //18 ---------------
-    addTestItem("读取各通道充满电压",true) ; //19
-    addTestItem("各通道充电开关关闭",true) ; //20
+    addTestItem("读取各通道充满电压",true) ; // 19 x
+    addTestItem("各通道充电开关关闭",true) ; // S20
 
-    // addTestItem("判断所有电压/电流/气压") ;
-    // addTestItem("根据结果及配置输出各通道LED灯") ;
-
-       addTestItem("各通道切换电流表开关关闭") ;
-    // addTestItem("将结果输出到主界面及日志") ;
-
-    // addTestItem("测试结束") ;
+    addTestItem("各通道切换电流表开关关闭") ;
 
     m_pModel1->item( 9,1)->setCheckState(m_pSet->value("ChanAirPress"  ).toBool()?Qt::Checked:Qt::Unchecked) ;      //9
     m_pModel1->item(11,1)->setCheckState(m_pSet->value("ChanOutVoltage").toBool()?Qt::Checked:Qt::Unchecked) ;      //11
@@ -121,12 +115,11 @@ DialogSetting::DialogSetting(QWidget *parent)
         if(item->column() == 1)
         {
             emit onTestOption(item->row(),item->checkState() == Qt::Checked);
-            //if(item->row() == 9 || item->row() ==11 || item->row() == 19)
         }
     });
 
     QTimer::singleShot(100,this,[=]{
-        emit onTestOption(9,m_pModel1->item(9,1)->checkState() == Qt::Checked);
+        emit onTestOption(9, m_pModel1->item(9, 1)->checkState() == Qt::Checked);
         emit onTestOption(11,m_pModel1->item(11,1)->checkState() == Qt::Checked);
         emit onTestOption(19,m_pModel1->item(19,1)->checkState() == Qt::Checked);
     });
@@ -146,18 +139,53 @@ DialogSetting::DialogSetting(QWidget *parent)
 
         index++ ;
         m_nTestIndex = index ;
-        m_pModel1->item(index,3)->setText("Testing ......") ;
-
-        m_cfg->doTesting(index) ;
-
         QString strTime = m_pModel1->item(index,2)->text() ;
-        m_TMTest.start(strTime.toInt() + ((index==10 || index==17) ? 1000 : 100)) ;
+
+        bool toTest = true ;
+        if(m_pModel1->item(index,1)->isCheckable())
+        {
+            toTest = (m_pModel1->item(index,1)->checkState() == Qt::Checked) ;
+            strTime = "0" ;
+        }
+
+        if(toTest)
+        {
+            m_pModel1->item(index,3)->setText("Testing ......") ;
+            m_cfg->doTesting(index) ;
+        }
+        else
+        {
+            m_pModel1->item(index,3)->setText("Pass by ......") ;
+        }
+
+        int wait = 100 ;
+        switch(index)
+        {
+        case 3:
+        case 8:
+        case 9:
+        case 10:
+        case 11:
+        case 17:
+        case 19:
+            wait = 1000;
+            break;
+        }
+
+        if(!toTest) wait = 100 ;
+
+        m_TMTest.start(strTime.toInt() + wait) ;
     });
 }
 
 DialogSetting::~DialogSetting()
 {
     delete ui;
+}
+
+void DialogSetting::toTheEnd()
+{
+    emit onTestToEnd();
 }
 
 void DialogSetting::startTest()

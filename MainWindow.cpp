@@ -239,6 +239,8 @@ MainWindow::MainWindow(QWidget *parent)
     });
 
     saveLoadTestCount(false);
+
+    // QTimer::singleShot(1000,this,[=]{ m_pDlgSet->toTheEnd(); });
 }
 
 MainWindow::~MainWindow()

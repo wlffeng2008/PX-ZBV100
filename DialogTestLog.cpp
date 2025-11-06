@@ -1,13 +1,21 @@
 #include "DialogTestLog.h"
 #include "ui_DialogTestLog.h"
+
 #include <QDir>
 #include <QFile>
+#include <QMenu>
+#include <QAction>
+#include <QMessageBox>
+
+static QString strLogPath ;
 
 DialogTestLog::DialogTestLog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DialogTestLog)
 {
     ui->setupUi(this);
+
+    strLogPath = QCoreApplication::applicationDirPath() + "/TestLog/";
 
     m_pModel1 = new QStandardItemModel(ui->tableView1);
     ui->tableView1->setModel(m_pModel1);
@@ -17,8 +25,9 @@ DialogTestLog::DialogTestLog(QWidget *parent) :
         QStringList nameFilters;
         nameFilters << "*.txt";
 
+        m_bLoading=true ;
         m_pModel1->setRowCount(0);
-        QString strPath(QCoreApplication::applicationDirPath() + "/TestLog/");
+        QString strPath(strLogPath);
         QDir dir(strPath) ;
         QStringList files = dir.entryList(nameFilters, QDir::Files | QDir::NoDotAndDotDot);
 
@@ -32,8 +41,87 @@ DialogTestLog::DialogTestLog(QWidget *parent) :
             ui->tableView1->selectRow(m_pModel1->rowCount()-1) ;
             ui->pushButtonCount->click() ;
         }
-
+        m_bLoading = false ;
     }) ;
+
+
+    connect(ui->tableView1,&QTableView::doubleClicked,this,[=](const QModelIndex &index){
+        qDebug() << index;
+        m_strOldname= m_pModel1->itemFromIndex(index)->text().trimmed() ;
+    });
+    connect(m_pModel1,&QStandardItemModel::itemChanged,this,[=](QStandardItem *item){
+        if(m_bLoading) return;
+        QString strNewname = item->text().trimmed() ;
+        if(strNewname.right(4).toLower() != ".txt")
+        {
+            m_bLoading = true;
+            strNewname += ".txt";
+            item->setText(strNewname);
+        }
+
+        if(strNewname.toUpper() != m_strOldname.toUpper())
+        {
+            QFile AFile(strLogPath+m_strOldname) ;
+            AFile.rename(strLogPath+strNewname);
+        }
+        m_bLoading=false;
+    }) ;
+
+    ui->tableView1->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->tableView1,&QTableView::customContextMenuRequested,this,[=](const QPoint &pos){
+        QModelIndex index = ui->tableView1->indexAt(pos);
+        m_index = index ;
+        if(!index.isValid())
+            return ;
+
+        static QMenu   *pMenu = new QMenu(this) ;
+        static QAction *pAct0 = new QAction("重命名",this) ;
+        static QAction *pAct1 = new QAction("删除",this) ;
+        static QAction *pAct2 = new QAction("清除所有",this) ;
+        static bool addItem = false ;
+
+        if(!addItem)
+        {
+            addItem = true ;
+            pMenu->addAction(pAct0);
+            pMenu->addAction(pAct1);
+            pMenu->addAction(pAct2);
+
+            connect(pAct0,&QAction::triggered,this,[=](bool checked ){
+                Q_UNUSED(checked)
+                ui->tableView1->edit(m_index);
+            }) ;
+
+            connect(pAct1,&QAction::triggered,this,[=](bool checked){
+                Q_UNUSED(checked)
+                QString strFile = m_pModel1->itemFromIndex(m_index)->text().trimmed();
+                QString strText = QString("确定要删除 %1 吗？").arg(strFile);
+                if(QMessageBox::question(this,"提醒",strText) == QMessageBox::Yes)
+                {
+                    m_pModel1->removeRow(m_index.row());
+                    QFile AFile(strLogPath + strFile);
+                    AFile.remove() ;
+                }
+            }) ;
+
+            connect(pAct2,&QAction::triggered,this,[=](bool checked){
+                Q_UNUSED(checked)
+
+                if(QMessageBox::question(this,"警告","确定要清除所有测试日志吗？") == QMessageBox::Yes)
+                {
+                    QString strFile;
+                    for(int i=0; i< m_pModel1->rowCount(); i++)
+                    {
+                        strFile = m_pModel1->item(i,0)->text().trimmed();
+                        QFile AFile(strLogPath + strFile);
+                        AFile.remove() ;
+                    }
+                    m_pModel1->setRowCount(0) ;
+                }
+            }) ;
+        }
+        pMenu->exec(QCursor::pos());
+    });
 
     ui->tableView1->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
@@ -47,10 +135,10 @@ DialogTestLog::DialogTestLog(QWidget *parent) :
     pHeader->resizeSection(0,150) ;
 
     pHeader->setSectionResizeMode(1,QHeaderView::Fixed);
-    pHeader->resizeSection(1,40) ;
+    pHeader->resizeSection(1,50) ;
 
     connect(ui->tableView1,&QTableView::clicked,this,[=](const QModelIndex &index){
-        QString strFile = QCoreApplication::applicationDirPath() + "/TestLog/" +m_pModel1->itemFromIndex(index)->text().trimmed();
+        QString strFile = strLogPath + m_pModel1->itemFromIndex(index)->text().trimmed();
         m_strLogFile = strFile ;
         ui->pushButtonCount->click() ;
     });

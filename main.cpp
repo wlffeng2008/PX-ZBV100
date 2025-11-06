@@ -2,6 +2,7 @@
 
 #include <QApplication>
 #include <QLocale>
+#include <QLibraryInfo>
 #include <QTranslator>
 
 int main(int argc, char *argv[])
@@ -153,14 +154,22 @@ int main(int argc, char *argv[])
 
     )");
 
-    QTranslator translator;
-    const QStringList uiLanguages = QLocale::system().uiLanguages();
-    for (const QString &locale : uiLanguages) {
-        const QString baseName = "PX-ZBV100_" + QLocale(locale).name();
-        if (translator.load(":/i18n/" + baseName)) {
-            a.installTranslator(&translator);
-            break;
-        }
+    // QTranslator translator;
+    // const QStringList uiLanguages = QLocale::system().uiLanguages();
+    // for (const QString &locale : uiLanguages) {
+    //     const QString baseName = "PX-ZBV100_" + QLocale(locale).name();
+    //     if (translator.load(":/i18n/" + baseName)) {
+    //         a.installTranslator(&translator);
+    //         break;
+    //     }
+    // }
+    QLocale::setDefault(QLocale(QLocale::Chinese,QLocale::China)) ;
+    QTranslator translator ;
+    bool bLoad = translator.load("qt_zh_TW.qm", QLibraryInfo::path(QLibraryInfo::TranslationsPath)) ;
+    if(bLoad)
+    {
+        qDebug() << "installTranslator";
+        a.installTranslator(&translator) ;
     }
     //a.setStyleSheet("");
     MainWindow w;
