@@ -153,7 +153,7 @@ private:
     void setResult(int result=0) ;
 
     void setItemColor(QStandardItem *item,int result=0) ;
-    void addLog() ;
+    void addTestLog() ;
     void saveLoadTestCount(bool save=true) ;
 };
 #endif // MAINWINDOW_H

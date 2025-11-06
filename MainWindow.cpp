@@ -35,13 +35,13 @@ MainWindow::MainWindow(QWidget *parent)
         strName = "MSVC2017";
 #endif
 
-        strBuild = QString("使用 %1 或更高版本编译, 版本号: %2").arg(strName).arg(_MSC_VER)  ;
+        strBuild = QString("使用 %1: %2编译").arg(strName).arg(_MSC_VER)  ;
 
 #else
         strBuild = "非 MSVC 编译(如 MinGW, GCC 等)";
 #endif
 
-        QString strTitle = QString("鹏翔测试装备上位机(PX-ZBV100) (V1.00) -- [Build: %1] [By Qt%2] -- [%3]").arg(__TIMESTAMP__,QT_VERSION_STR,strBuild) ;
+        QString strTitle = QString("鹏翔测试装备上位机(PX-ZBV100) (V1.08) -- [Build: %1] [By Qt%2] -- [%3]").arg(__TIMESTAMP__,QT_VERSION_STR,strBuild) ;
         setWindowTitle(strTitle);
         qDebug() << strTitle;
     }
@@ -57,7 +57,6 @@ MainWindow::MainWindow(QWidget *parent)
         else
             pWin->setFlags(windowFlags() & ~Qt::WindowStaysOnTopHint);
     });
-
 
     connect(ui->pushButtonSetting,&QPushButton::clicked,this,[=]{
         m_pDlgSet->show();
@@ -135,14 +134,14 @@ MainWindow::MainWindow(QWidget *parent)
         calcDele->setTableView(ui->tableView2) ;
         ui->tableView2->setItemDelegateForColumn(0,calcDele) ;
     }
-    m_pModel2->item(0,0)->setBackground(QBrush(Qt::lightGray)) ;
-    m_pModel2->item(1,0)->setBackground(QBrush(Qt::lightGray)) ;
-    m_pModel2->item(2,0)->setBackground(QBrush(Qt::lightGray)) ;
-    m_pModel2->item(0,0)->setTextAlignment(Qt::AlignVCenter|Qt::AlignRight) ;
-    m_pModel2->item(1,0)->setTextAlignment(Qt::AlignVCenter|Qt::AlignRight) ;
-    m_pModel2->item(2,0)->setTextAlignment(Qt::AlignVCenter|Qt::AlignRight) ;
+    m_pModel2->item(0,0)->setBackground(QBrush(Qt::lightGray));
+    m_pModel2->item(1,0)->setBackground(QBrush(Qt::lightGray));
+    m_pModel2->item(2,0)->setBackground(QBrush(Qt::lightGray));
+    m_pModel2->item(0,0)->setTextAlignment(Qt::AlignVCenter|Qt::AlignRight);
+    m_pModel2->item(1,0)->setTextAlignment(Qt::AlignVCenter|Qt::AlignRight);
+    m_pModel2->item(2,0)->setTextAlignment(Qt::AlignVCenter|Qt::AlignRight);
 
-    ui->tableView2->setStyleSheet("QTableView { border-right: none; border-bottom: none; font: bold 12px 微软雅黑;}") ;
+    ui->tableView2->setStyleSheet("QTableView { border-right: none; border-bottom: none; font: bold 12px 微软雅黑;}");
     //ui->labelStatus->setStyleSheet("QLabel{border:2px solid gray;}") ;
 
     connect(ui->pushButtonRun,&QPushButton::clicked,this,[=]{
@@ -153,20 +152,23 @@ MainWindow::MainWindow(QWidget *parent)
         }
 
         setResult(0);
-        ui->labelStatus->setText("正在测试") ;
+        ui->labelStatus->setText("正在测试");
         ui->labelStatus->setStyleSheet("QLabel{border:2px solid skyblue;border-radius:10px;background-color:gray;color:white}") ;
 
-        m_pDlgCfg->reset() ;
-        m_pDlgSet->startTest() ;
+        m_pDlgCfg->reset();
+        m_pDlgSet->startTest();
     });
 
     connect(m_pDlgSet,&DialogSetting::onTestOption,this,[=](int item,bool enable){
         int col = -1 ;
         switch(item)
         {
-        case 19: col = 4; break;
-        case 11: col = 5; break;
         case  9: col = 6; break;
+        case 11: col = 5; break;
+        case 19: col = 4; break;
+        case 17: col = 3; break;
+        case 10: col = 2; break;
+        case  3: col = 1; break;
         }
 
         if(col>0)
@@ -195,12 +197,12 @@ MainWindow::MainWindow(QWidget *parent)
             if(m_pModel1->item(i,0)->checkState() == Qt::Checked)
             {
                 m_total ++ ;
-                total ++ ;
+                total   ++ ;
                 bool ok = isRowPassed(i);
                 if(ok)
                 {
                     m_good ++ ;
-                    good ++ ;
+                    good   ++ ;
                     m_pDlgCfg->setLED_R(i,false) ;
                     m_pDlgCfg->setLED_G(i,true);
                 }
@@ -232,10 +234,10 @@ MainWindow::MainWindow(QWidget *parent)
         m_pModel2->item(2,1)->setText(strRate);
         saveLoadTestCount() ;
 
-        addLog() ;
+        addTestLog() ;
 
         if(m_pDlgCfg->isTestNotify())
-            QMessageBox::information(this,"提示",QString("测试完毕！") + (good== total ? "(全部通过)" : "(部分通过)") );
+            QMessageBox::information(this,"提示",QString("测试完毕！") + (good == total ? "(全部通过)" : "(部分通过)") );
     });
 
     saveLoadTestCount(false);
@@ -252,9 +254,9 @@ void MainWindow::saveLoadTestCount(bool save)
 {
     QSettings set(QCoreApplication::applicationDirPath()+"/TestCount.ini",QSettings::IniFormat);
     QString strDate = QDateTime::currentDateTime().toString("yyyy-MM-dd");
-    QString strTotal= "Total" + strDate ;
-    QString strGood= "Good" + strDate ;
-    QString strRate= "Rate" + strDate ;
+    QString strTotal= "Total" + strDate;
+    QString strGood = "Good"  + strDate;
+    QString strRate = "Rate"  + strDate;
     if(save)
     {
         set.setValue(strTotal,m_total);
@@ -272,7 +274,7 @@ void MainWindow::saveLoadTestCount(bool save)
     }
 }
 
-void MainWindow::addLog()
+void MainWindow::addTestLog()
 {
     QString strPath(QCoreApplication::applicationDirPath() + "/TestLog");
     QDir dir(strPath);

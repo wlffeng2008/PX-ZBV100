@@ -30,22 +30,16 @@ protected:
     void paintSection(QPainter *painter, const QRect &rect, int logicalIndex) const override {
         painter->save();
         painter->fillRect(rect,painter->background());
-        painter->setPen(Qt::gray) ;
-        painter->drawLine(rect.bottomLeft(),rect.bottomRight()) ;
-        painter->drawLine(rect.topRight(),rect.bottomRight()) ;
-        painter->setPen(Qt::black) ;
-        painter->setFont(parentWidget()->font()) ;
+        painter->setFont(parentWidget()->font());
         painter->drawText(rect.adjusted(0,0,-5,0),QString::number(logicalIndex),QTextOption(Qt::AlignVCenter|Qt::AlignRight));
 
-        //qDebug() << painter->background() ;
+        QPalette palette = this->palette();
+        painter->setPen(palette.color(QPalette::Mid));
+        painter->drawLine(rect.bottomLeft(),rect.bottomRight()) ;
+        painter->drawLine(rect.topRight(),rect.bottomRight());
+
         //QHeaderView::paintSection(painter, rect, logicalIndex);
 
-        QStyleOptionHeader opt;
-        initStyleOption(&opt);
-        opt.text = QString::number(logicalIndex);
-        opt.rect = rect;
-
-        //style()->drawControl(QStyle::CE_HeaderLabel, &opt, painter, this);
         painter->restore();
     }
 };

@@ -345,14 +345,14 @@
   </widget>
   <widget class="QSpinBox" name="spinBox">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="geometry">
     <rect>
      <x>552</x>
-     <y>588</y>
+     <y>592</y>
      <width>60</width>
-     <height>24</height>
+     <height>20</height>
     </rect>
    </property>
    <property name="buttonSymbols">
@@ -362,10 +362,10 @@
     <number>6</number>
    </property>
    <property name="maximum">
-    <number>36</number>
+    <number>48</number>
    </property>
    <property name="value">
-    <number>6</number>
+    <number>12</number>
    </property>
   </widget>
   <widget class="QLabel" name="label">
@@ -413,14 +413,30 @@
   <widget class="QCheckBox" name="checkBoxNoitfy">
    <property name="geometry">
     <rect>
-     <x>474</x>
-     <y>634</y>
+     <x>472</x>
+     <y>626</y>
      <width>191</width>
      <height>19</height>
     </rect>
    </property>
    <property name="text">
     <string>测试完成弹框提示</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_6">
+   <property name="geometry">
+    <rect>
+     <x>618</x>
+     <y>590</y>
+     <width>73</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>(需重启)</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
    </property>
   </widget>
  </widget>

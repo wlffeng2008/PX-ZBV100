@@ -177,27 +177,11 @@ DialogConfig::DialogConfig(QWidget *parent)
     pHeader->setSectionResizeMode(2,QHeaderView::Fixed) ;
     pHeader->resizeSection(2,80) ;
 
-    QStringList Col1 = m_pSet->value("Col1","1,1,1,1,1,1,0,0,0,0,0,0,0").toString().split(',') ;
-    QStringList Col2 = m_pSet->value("Col2","30,31,32,33,34,35,30,31,32,33,34,35,0").toString().split(',') ;
-    QStringList Col3 = m_pSet->value("Col3","5C,5D,5E,5F,11,12,5C,5D,5E,5F,11,12,0").toString().split(',') ;
-    QStringList Col4 = m_pSet->value("Col4","41,42,43,44,45,46,41,42,43,44,45,46,0").toString().split(',') ;
-    QStringList Col5 = m_pSet->value("Col5","51C,53,55,57,59,5B,51,53,55,57,59,5B,0").toString().split(',') ;
-    QStringList Col6 = m_pSet->value("Col6","50,52,54,56,58,5A,50,52,54,56,58,5A,0").toString().split(',') ;
-    m_pModelChan->appendRow({new QStandardItem("1" ),new QStandardItem(""),new QStandardItem("30"),new QStandardItem("5C"),new QStandardItem("41"),new QStandardItem("51"),new QStandardItem("50")});
-    m_pModelChan->appendRow({new QStandardItem("2" ),new QStandardItem(""),new QStandardItem("31"),new QStandardItem("5D"),new QStandardItem("42"),new QStandardItem("53"),new QStandardItem("52")});
-    m_pModelChan->appendRow({new QStandardItem("3" ),new QStandardItem(""),new QStandardItem("32"),new QStandardItem("5E"),new QStandardItem("43"),new QStandardItem("55"),new QStandardItem("54")});
-    m_pModelChan->appendRow({new QStandardItem("4" ),new QStandardItem(""),new QStandardItem("33"),new QStandardItem("5F"),new QStandardItem("44"),new QStandardItem("57"),new QStandardItem("56")});
-    m_pModelChan->appendRow({new QStandardItem("5" ),new QStandardItem(""),new QStandardItem("34"),new QStandardItem("11"),new QStandardItem("45"),new QStandardItem("59"),new QStandardItem("58")});
-    m_pModelChan->appendRow({new QStandardItem("6" ),new QStandardItem(""),new QStandardItem("35"),new QStandardItem("12"),new QStandardItem("46"),new QStandardItem("5B"),new QStandardItem("5A")});
-    m_pModelChan->appendRow({new QStandardItem("7" ),new QStandardItem(""),new QStandardItem("30"),new QStandardItem("5C"),new QStandardItem("41"),new QStandardItem("51"),new QStandardItem("50")});
-    m_pModelChan->appendRow({new QStandardItem("8" ),new QStandardItem(""),new QStandardItem("31"),new QStandardItem("5D"),new QStandardItem("42"),new QStandardItem("53"),new QStandardItem("52")});
-    m_pModelChan->appendRow({new QStandardItem("9" ),new QStandardItem(""),new QStandardItem("32"),new QStandardItem("5E"),new QStandardItem("43"),new QStandardItem("55"),new QStandardItem("54")});
-    m_pModelChan->appendRow({new QStandardItem("10"),new QStandardItem(""),new QStandardItem("33"),new QStandardItem("5F"),new QStandardItem("44"),new QStandardItem("57"),new QStandardItem("56")});
-    m_pModelChan->appendRow({new QStandardItem("11"),new QStandardItem(""),new QStandardItem("34"),new QStandardItem("11"),new QStandardItem("45"),new QStandardItem("59"),new QStandardItem("58")});
-    m_pModelChan->appendRow({new QStandardItem("12"),new QStandardItem(""),new QStandardItem("35"),new QStandardItem("12"),new QStandardItem("46"),new QStandardItem("5B"),new QStandardItem("5A")});
+    int chanCount = m_pSet->value("chanCount",12).toInt();
+    for(int i=0; i<chanCount; i++)
+        m_pModelChan->appendRow({new QStandardItem(QString::number(i+1)),new QStandardItem(""),new QStandardItem("30"),new QStandardItem("5C"),new QStandardItem("41"),new QStandardItem("51"),new QStandardItem("50")});
 
-    connect(m_pModelChan,&QStandardItemModel::itemChanged,this,[=](QStandardItem *item)
-    {
+    connect(m_pModelChan,&QStandardItemModel::itemChanged,this,[=](QStandardItem *item) {
         int row = item->row();
         int col = item->column();
         if(col >= 2 && !m_bOutset) setWitch(item->text().trimmed().toUInt(nullptr,16),item->checkState() == Qt::Checked) ;
@@ -214,7 +198,7 @@ DialogConfig::DialogConfig(QWidget *parent)
         QString strCol4;
         QString strCol5;
         QString strCol6;
-        for(int i=0; i<12; i++)
+        for(int i=0; i<m_pModelChan->rowCount(); i++)
         {
             strCol1 += (m_pModelChan->item(i,1)->checkState() == Qt::Checked) ? "1,":"0,";
             strCol2 += m_pModelChan->item(i,2)->text() + "," ;
@@ -231,7 +215,13 @@ DialogConfig::DialogConfig(QWidget *parent)
         m_pSet->setValue("Col6",strCol6);
     });
 
-    for(int i=0; i<12; i++)
+    QStringList Col1 = m_pSet->value("Col1","1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0").toString().split(',') ;
+    QStringList Col2 = m_pSet->value("Col2","30,31,32,33,34,35,30,31,32,33,34,35,30,31,32,33,34,35,30,31,32,33,34,35,30,31,32,33,34,35,30,31,32,33,34,35,30,31,32,33,34,35,30,30,31,32,33,34,35,30,50,52,54,56,58,5A,0").toString().split(',') ;
+    QStringList Col3 = m_pSet->value("Col3","5C,5D,5E,5F,11,12,5C,5D,5E,5F,11,12,5C,5D,5E,5F,11,12,5C,5D,5E,5F,11,12,5C,5D,5E,5F,11,12,5C,5D,5E,5F,11,12,5C,5D,5E,5F,11,12,5C,5D,5E,5F,11,12,50,52,54,56,58,5A,58,5A,0").toString().split(',') ;
+    QStringList Col4 = m_pSet->value("Col4","41,42,43,44,45,46,41,42,43,44,45,46,41,42,43,44,45,46,41,42,43,44,45,46,41,42,43,44,45,46,41,42,43,44,45,46,41,42,43,44,45,46,41,42,43,44,45,46,50,52,54,56,58,5A,56,58,0").toString().split(',') ;
+    QStringList Col5 = m_pSet->value("Col5","51,53,55,57,59,5B,51,53,55,57,59,5B,51,53,55,57,59,5B,51,53,55,57,59,5B,51,53,55,57,59,5B,51,53,55,57,59,5B,51,53,55,57,59,5B,51,51,53,55,57,59,5B,51,50,52,54,56,58,5A,0").toString().split(',') ;
+    QStringList Col6 = m_pSet->value("Col6","50,52,54,56,58,5A,50,52,54,56,58,5A,50,52,54,56,58,5A,50,52,54,56,58,5A,50,52,54,56,58,5A,50,52,54,56,58,5A,50,52,54,56,58,5A,50,52,54,56,58,5A,50,52,54,56,58,5A,54,56,0").toString().split(',') ;
+    for(int i=0; i<m_pModelChan->rowCount(); i++)
     {
         m_pModelChan->item(i,0)->setTextAlignment(Qt::AlignRight|Qt::AlignVCenter);
         m_pModelChan->item(i,0)->setSelectable(false);
@@ -239,6 +229,8 @@ DialogConfig::DialogConfig(QWidget *parent)
         m_pModelChan->item(i,1)->setEditable(false);
         for(int j=1; j<=6; j++)
             m_pModelChan->item(i,j)->setCheckable(true);
+        if(i >= Col1.count() || Col1[i].trimmed().isEmpty())
+            continue;
 
         m_pModelChan->item(i,1)->setCheckState(Col1[i] == "1" ? Qt::Checked:Qt::Unchecked);
         m_pModelChan->item(i,2)->setText(Col2[i]) ;
@@ -250,7 +242,7 @@ DialogConfig::DialogConfig(QWidget *parent)
 
     QTimer::singleShot(500,this,[=]{
         srand(time(nullptr));
-        for(int i=0; i<12; i++)
+        for(int i=0; i<m_pModelChan->rowCount(); i++)
         {
             emit onChanState(i,m_pModelChan->item(i,1)->checkState());
             // emit onReadBack(i,1,100.0,1) ;
@@ -259,27 +251,13 @@ DialogConfig::DialogConfig(QWidget *parent)
         }
     });
 
-    // connect(ui->spinBox,&QSpinBox::valueChanged,this,[=](int value){
-    //     m_pModelChan->setRowCount(0) ;
-    //     for(int i=0; i<value; i++)
-    //     {
-    //         QStandardItem *item1 = new QStandardItem(QString("%1").arg(i+1));
-    //         QStandardItem *item2 = new QStandardItem("");
-    //         item1->setEditable(false);
-    //         item1->setTextAlignment(Qt::AlignVCenter|Qt::AlignRight) ;
-    //         item2->setEditable(false);
-    //         item2->setCheckable(true);
-    //         item2->setCheckState(Qt::Checked);
-    //         m_pModelChan->appendRow({item1,item2});
-    //     }
-    // }) ;
 
-    // ui->spinBox->setValue(1) ;
-    // QTimer::singleShot(200,[=]{ ui->spinBox->setValue(12); });
+    ui->spinBox->setValue(chanCount);
+    connect(ui->spinBox,&QSpinBox::valueChanged,this,[=](int value){
+        m_pSet->setValue("chanCount",value);
+    }) ;
 
-    connect(ui->tableViewCOM,&QTableView::clicked,this,[=](const QModelIndex &index){
-
-    });
+    connect(ui->tableViewCOM,&QTableView::clicked,this,[=](const QModelIndex &index){ });
 
     connect(m_pModelCOM,&QStandardItemModel::itemChanged,this,[=](QStandardItem *item){
         int row = item->row();
