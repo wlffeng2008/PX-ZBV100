@@ -254,9 +254,11 @@ void MainWindow::saveLoadTestCount(bool save)
 {
     QSettings set(QCoreApplication::applicationDirPath()+"/TestCount.ini",QSettings::IniFormat);
     QString strDate = QDateTime::currentDateTime().toString("yyyy-MM-dd");
+
     QString strTotal= "Total" + strDate;
     QString strGood = "Good"  + strDate;
     QString strRate = "Rate"  + strDate;
+
     if(save)
     {
         set.setValue(strTotal,m_total);
