@@ -144,22 +144,33 @@ DialogTestLog::DialogTestLog(QWidget *parent) :
     });
 
     connect(ui->pushButtonCount,&QPushButton::clicked,this,[=]{
+
+        m_total = 0 ;
+        m_good = 0 ;
+        m_pModel2->setRowCount(0) ;
+
         QFile file(m_strLogFile);
         if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
             qDebug() << "文件打开失败：" << file.errorString()  << m_strLogFile;
             return false;
         }
 
-        m_total = 0 ;
-        m_good = 0 ;
-        m_pModel2->setRowCount(0) ;
-
         QTextStream in(&file);
-        in.readLine() ;
-        while (!in.atEnd()) addItem(in.readLine());
-        file.close();
-        QString strCount=QString::asprintf("测试总数：%d     通过数量：%d     通过率：%.2f%%",m_total,m_good,m_good*100.0/m_total);
-        ui->labelCount->setText(strCount) ;
+        QString strLine = in.readLine() ;
+        if(strLine.startsWith("测试时间") && strLine.contains("吸烟电流") && strLine.contains("启动气压"))
+        {
+            while (!in.atEnd())
+                addItem(in.readLine());
+
+            file.close();
+            QString strCount=QString::asprintf("测试总数：%d     通过数量：%d     通过率：%.2f%%",m_total,m_good,m_good*100.0/m_total);
+            ui->labelCount->setText(strCount) ;
+        }
+        else
+        {
+            QMessageBox::warning(this,"提醒",QString("文件：") + m_strLogFile + " 不是测试记录文件！" );
+        }
+        return true ;
     });
 
     ui->pushButtonList->click() ;
@@ -172,13 +183,15 @@ DialogTestLog::~DialogTestLog()
 
 void DialogTestLog::addItem(QString strLine)
 {
-    QStringList strItems=strLine.trimmed().split(',');
+    QStringList strItems = strLine.trimmed().split(',');
     if(strItems.count() != 9)
         return ;
+
     QList<QStandardItem*> list ;
     for(int i=0;i<strItems.size(); i++){
         QStandardItem *item=new QStandardItem(strItems[i]) ;
         item->setEditable(false) ;
+        item->setTextAlignment(Qt::AlignCenter);
         list.append(item) ;
     }
     m_pModel2->appendRow(list) ;

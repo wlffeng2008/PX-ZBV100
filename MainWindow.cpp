@@ -12,6 +12,19 @@
 #include <QMessageBox>
 #include <QSettings>
 
+QString secsToTimeFormat(qint64 totalSeconds) {
+    // 计算小时、分钟、秒
+    int hours = totalSeconds / 3600;          // 1小时 = 3600秒
+    int minutes = (totalSeconds % 3600) / 60; // 剩余秒数换算为分钟
+    int seconds = totalSeconds % 60;          // 剩余秒数
+
+    // 格式化：不足两位补零（例如 5 → "05"）
+    return QString("%1:%2:%3")
+        .arg(hours, 2, 10, QChar('0'))
+        .arg(minutes, 2, 10, QChar('0'))
+        .arg(seconds, 2, 10, QChar('0'));
+}
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -27,15 +40,13 @@ MainWindow::MainWindow(QWidget *parent)
 
         QString strName = "MSVC2017";
 
-#if _MSC_VER >= 1930
+    #if _MSC_VER >= 1930
         strName = "MSVC2022";
-#elif _MSC_VER >= 1920
+    #elif _MSC_VER >= 1920
         strName = "MSVC2019";
-#else
-        strName = "MSVC2017";
-#endif
+    #endif
 
-        strBuild = QString("使用 %1: %2编译").arg(strName).arg(_MSC_VER)  ;
+        strBuild = QString("使用 %1: %2编译").arg(strName).arg(_MSC_VER);
 
 #else
         strBuild = "非 MSVC 编译(如 MinGW, GCC 等)";
@@ -243,6 +254,16 @@ MainWindow::MainWindow(QWidget *parent)
     saveLoadTestCount(false);
 
     // QTimer::singleShot(1000,this,[=]{ m_pDlgSet->toTheEnd(); });
+
+    m_start = time(nullptr);
+    connect(&m_TMCount,&QTimer::timeout,this,[=]{
+        m_TMCount.stop() ;
+        QDateTime tm = QDateTime::fromSecsSinceEpoch(static_cast<qint64>(m_start));
+        QString strTime = QString("%1 -  [%2]").arg(tm.toString("yyyy-MM-dd hh:mm:ss"),secsToTimeFormat(time(nullptr) - m_start)) ;
+        ui->labelTime->setText(strTime);
+        m_TMCount.start(1000) ;
+    });
+    m_TMCount.start(5) ;
 }
 
 MainWindow::~MainWindow()
@@ -294,7 +315,7 @@ void MainWindow::addTestLog()
     QTextStream out(&file);
     if(!bExist)
     {
-        QString strLine= "测试时间,通道号,静态电流(uA),吸烟电流(mA),充电电流(mA),充满电压(mV),输出电压(mV),启动气压(Pa),结果\n" ;
+        QString strLine= "测试时间,通道号,静态电流(uA),吸烟电流(mA),充电电流(mA),充满电压(mV),输出电压(mV),启动气压(Pa),测试结果\n" ;
         out << strLine ;
     }
 

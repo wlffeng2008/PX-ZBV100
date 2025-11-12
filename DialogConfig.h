@@ -61,6 +61,7 @@ private:
     QByteArray m_buf1 ;
     QByteArray m_buf2 ;
 
+    bool m_bLoading=false ;
     bool m_bOutset=false ;
     quint8 m_readType = 0;
     quint8 m_readPort = 0;

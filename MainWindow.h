@@ -147,6 +147,9 @@ private:
     quint16 m_total = 0;
     quint16 m_good = 0;
 
+    time_t m_start ;
+    QTimer m_TMCount;
+
     void setItemResult(int row,int col,int result=0) ;
     void setRowResult(int row,int result=0) ;
     bool isRowPassed(int row) ;

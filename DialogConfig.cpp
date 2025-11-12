@@ -182,6 +182,7 @@ DialogConfig::DialogConfig(QWidget *parent)
         m_pModelChan->appendRow({new QStandardItem(QString::number(i+1)),new QStandardItem(""),new QStandardItem("30"),new QStandardItem("5C"),new QStandardItem("41"),new QStandardItem("51"),new QStandardItem("50")});
 
     connect(m_pModelChan,&QStandardItemModel::itemChanged,this,[=](QStandardItem *item) {
+        if(m_bLoading) return;
         int row = item->row();
         int col = item->column();
         if(col >= 2 && !m_bOutset) setWitch(item->text().trimmed().toUInt(nullptr,16),item->checkState() == Qt::Checked) ;
@@ -215,6 +216,7 @@ DialogConfig::DialogConfig(QWidget *parent)
         m_pSet->setValue("Col6",strCol6);
     });
 
+    m_bLoading=true;
     QStringList Col1 = m_pSet->value("Col1","1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0").toString().split(',') ;
     QStringList Col2 = m_pSet->value("Col2","30,31,32,33,34,35,30,31,32,33,34,35,30,31,32,33,34,35,30,31,32,33,34,35,30,31,32,33,34,35,30,31,32,33,34,35,30,31,32,33,34,35,30,30,31,32,33,34,35,30,50,52,54,56,58,5A,0").toString().split(',') ;
     QStringList Col3 = m_pSet->value("Col3","5C,5D,5E,5F,11,12,5C,5D,5E,5F,11,12,5C,5D,5E,5F,11,12,5C,5D,5E,5F,11,12,5C,5D,5E,5F,11,12,5C,5D,5E,5F,11,12,5C,5D,5E,5F,11,12,5C,5D,5E,5F,11,12,50,52,54,56,58,5A,58,5A,0").toString().split(',') ;
@@ -239,6 +241,7 @@ DialogConfig::DialogConfig(QWidget *parent)
         m_pModelChan->item(i,5)->setText(Col5[i]) ;
         m_pModelChan->item(i,6)->setText(Col6[i]) ;
     }
+    m_bLoading=false;
 
     QTimer::singleShot(500,this,[=]{
         srand(time(nullptr));
