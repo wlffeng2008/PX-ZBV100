@@ -1,4 +1,4 @@
-QT       += core gui mqtt
+QT       += core gui
 QT       += serialport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -12,10 +12,10 @@ CONFIG += c++17
 RC_ICONS = PX-ZBV100.ico
 VERSION = 1.0.0.0
 TARGET = PX-ZBV100
-QMAKE_TARGET_COMPANY = "иНшзйпеТоХ╟К╣╪лЕ╪╪йУспоч╧╚к╬"
-QMAKE_TARGET_PRODUCT = "еТоХ╡Бйтв╟╠╦ион╩╩З"
+QMAKE_TARGET_COMPANY = "Ф╥╠Е°ЁЕ╦┌И╧▐Г©■Е█┼Е╞╪Д╫⌠Ф┼─Ф°╞Ф°┴И≥░Е┘╛Е▐╦"
+QMAKE_TARGET_PRODUCT = "И╧▐Г©■Ф╣▀Х╞∙Хё┘Е╓┤Д╦┼Д╫█Ф°╨"
 QMAKE_TARGET_DESCRIPTION = "PX-ZBV100: Created by Qt6.10.0"
-QMAKE_TARGET_COPYRIGHT = "еТоХ╟К╣╪лЕ ╟Фх╗кЫсп(2025.10)"
+QMAKE_TARGET_COPYRIGHT = "И╧▐Г©■Е█┼Е╞╪Д╫⌠ Г┴┬Ф²┐Ф┴─Ф°┴(2025.10)"
 RC_LANG = 0x0004
 
 DESTDIR = ../../bin

@@ -60,6 +60,7 @@ DialogConfig::DialogConfig(QWidget *parent)
         }
     }
     connect(m_pModelTGroup,&QStandardItemModel::itemChanged,this,[=](QStandardItem *item){
+        Q_UNUSED(item)
         QString strPorts ;
         QString strMins ;
         QString strMaxs ;
@@ -124,6 +125,7 @@ DialogConfig::DialogConfig(QWidget *parent)
     m_pModelCOM->item(6,2)->setCheckable(true);
 
     connect(m_pModelCOM,&QStandardItemModel::itemChanged,this,[=](QStandardItem *item){
+        Q_UNUSED(item)
         m_pSet->setValue("COMPort1",m_pModelCOM->item(0,1)->text().trimmed());
         m_pSet->setValue("COMPort2",m_pModelCOM->item(0,2)->text().trimmed());
         m_pSet->setValue("COMBaud1",m_pModelCOM->item(1,1)->text().trimmed());
@@ -260,7 +262,9 @@ DialogConfig::DialogConfig(QWidget *parent)
         m_pSet->setValue("chanCount",value);
     }) ;
 
-    connect(ui->tableViewCOM,&QTableView::clicked,this,[=](const QModelIndex &index){ });
+    connect(ui->tableViewCOM,&QTableView::clicked,this,[=](const QModelIndex &index){
+        Q_UNUSED(index)
+    });
 
     connect(m_pModelCOM,&QStandardItemModel::itemChanged,this,[=](QStandardItem *item){
         int row = item->row();

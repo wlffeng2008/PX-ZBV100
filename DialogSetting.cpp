@@ -142,13 +142,14 @@ DialogSetting::DialogSetting(QWidget *parent)
 
         index++ ;
         m_nTestIndex = index ;
-        QString strTime = m_pModel1->item(index,2)->text() ;
+        QString strTime = m_pModel1->item(index,2)->text().trimmed() ;
 
         bool toTest = true ;
         if(m_pModel1->item(index,1)->isCheckable())
         {
             toTest = (m_pModel1->item(index,1)->checkState() == Qt::Checked) ;
-            strTime = "0" ;
+            if(!toTest)
+                strTime = "0" ;
         }
 
         if(toTest)
