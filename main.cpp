@@ -163,15 +163,24 @@ int main(int argc, char *argv[])
     //         break;
     //     }
     // }
-    QLocale::setDefault(QLocale(QLocale::Chinese,QLocale::China)) ;
-    QTranslator translator ;
-    bool bLoad = translator.load("qt_zh_TW.qm", QLibraryInfo::path(QLibraryInfo::TranslationsPath)) ;
-    if(bLoad)
-    {
-        qDebug() << "installTranslator";
-        a.installTranslator(&translator) ;
-    }
-    //a.setStyleSheet("");
+
+    QLocale::setDefault(QLocale(QLocale::Chinese,QLocale::China));
+
+    QTranslator translatorA ;
+    QTranslator translatorB ;
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    translatorA.load("qt_zh_CN.qm", QLibraryInfo::path(QLibraryInfo::TranslationsPath));
+    translatorB.load("qtbase_zh_CN.qm", QLibraryInfo::path(QLibraryInfo::TranslationsPath));
+#else
+    translatorA.load("qt_zh_CN.qm", QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    translatorB.load("qtbase_zh_CN.qm", QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+#endif
+
+    qDebug() << "installTranslator";
+    a.installTranslator(&translatorA) ;
+    a.installTranslator(&translatorB) ;
+
     MainWindow w;
     w.show();
     return a.exec();
