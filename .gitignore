@@ -80,3 +80,6 @@ CMakeLists.txt.user*
 .rcc/
 .uic/
 /build*/
+/bin-MSVC/PX-ZBV100-1222.rar
+/bin-MSVC/PXTestConfig.ini
+/bin-MinGW/PXTestConfig.ini
